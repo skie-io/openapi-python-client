@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from typing import Any, Optional
+from typing import Any
 
 import httpx
 
@@ -18,15 +18,12 @@ def _get_kwargs() -> dict[str, Any]:
     return _kwargs
 
 
-def _parse_response(*, client: Client, response: httpx.Response) -> Optional[GetModelsAllofResponse200]:
+def _parse_response(*, client: Client, response: httpx.Response) -> GetModelsAllofResponse200:
     if response.status_code == 200:
         response_200 = GetModelsAllofResponse200.from_dict(response.json())
 
         return response_200
-    if client.raise_on_unexpected_status:
-        raise errors.UnexpectedStatus(response.status_code, response.content)
-    else:
-        return None
+    raise errors.UnexpectedStatus(response)
 
 
 def _build_response(*, client: Client, response: httpx.Response) -> Response[GetModelsAllofResponse200]:
@@ -44,7 +41,6 @@ def sync_detailed(
 ) -> Response[GetModelsAllofResponse200]:
     """
     Raises:
-        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
@@ -63,10 +59,9 @@ def sync_detailed(
 def sync(
     *,
     client: Client,
-) -> Optional[GetModelsAllofResponse200]:
+) -> GetModelsAllofResponse200:
     """
     Raises:
-        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
@@ -84,7 +79,6 @@ async def asyncio_detailed(
 ) -> Response[GetModelsAllofResponse200]:
     """
     Raises:
-        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
@@ -101,10 +95,9 @@ async def asyncio_detailed(
 async def asyncio(
     *,
     client: Client,
-) -> Optional[GetModelsAllofResponse200]:
+) -> GetModelsAllofResponse200:
     """
     Raises:
-        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:

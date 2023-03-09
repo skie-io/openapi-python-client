@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from typing import Any, Optional, cast
+from typing import Any, cast
 
 import httpx
 
@@ -29,14 +29,11 @@ def _get_kwargs(
     return _kwargs
 
 
-def _parse_response(*, client: Client, response: httpx.Response) -> Optional[str]:
+def _parse_response(*, client: Client, response: httpx.Response) -> str:
     if response.status_code == 200:
         response_200 = cast(str, response.json())
         return response_200
-    if client.raise_on_unexpected_status:
-        raise errors.UnexpectedStatus(response.status_code, response.content)
-    else:
-        return None
+    raise errors.UnexpectedStatus(response)
 
 
 def _build_response(*, client: Client, response: httpx.Response) -> Response[str]:
@@ -58,7 +55,6 @@ def sync_detailed(
         body (PostPrefixItemsBody):
 
     Raises:
-        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
@@ -80,13 +76,12 @@ def sync(
     *,
     client: Client,
     body: PostPrefixItemsBody,
-) -> Optional[str]:
+) -> str:
     """
     Args:
         body (PostPrefixItemsBody):
 
     Raises:
-        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
@@ -109,7 +104,6 @@ async def asyncio_detailed(
         body (PostPrefixItemsBody):
 
     Raises:
-        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
@@ -129,13 +123,12 @@ async def asyncio(
     *,
     client: Client,
     body: PostPrefixItemsBody,
-) -> Optional[str]:
+) -> str:
     """
     Args:
         body (PostPrefixItemsBody):
 
     Raises:
-        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
