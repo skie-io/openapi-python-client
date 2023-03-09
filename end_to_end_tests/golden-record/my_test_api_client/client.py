@@ -3,6 +3,8 @@ from typing import Any, Dict, Optional
 import httpx
 from attrs import define, field
 
+from .jwt import AsyncJWTAuth, SyncJWTAuth
+
 
 @define
 class Client:
@@ -26,6 +28,9 @@ class Client:
         raise_on_unexpected_status: Whether or not to raise an errors.UnexpectedStatus if the API returns a
             status code that was not documented in the source OpenAPI document. Can also be provided as a keyword
             argument to the constructor.
+        key: The private key used to sign the JWT encoded with ES256.
+        key_fingerprint: Key ID or fingerprint.
+        jwt_expiration: Controls the expiration time for a JWT. 60 seconds by default.
     """
 
     raise_on_unexpected_status: bool = field(default=False, kw_only=True)
@@ -36,6 +41,9 @@ class Client:
     _httpx_args: Dict[str, Any] = field(factory=dict, kw_only=True)
     _client: Optional[httpx.Client] = field(default=None, init=False)
     _async_client: Optional[httpx.AsyncClient] = field(default=None, init=False)
+    _key: str = field(kw_only=True)
+    _key_fingerprint: str = field(kw_only=True)
+    _jwt_expiration: int = field(default=60, kw_only=True)
 
     def set_httpx_client(self, client: httpx.Client) -> "Client":
         """Manually the underlying httpx.Client
@@ -48,7 +56,10 @@ class Client:
     def get_httpx_client(self) -> httpx.Client:
         """Get the underlying httpx.Client, constructing a new one if not previously set"""
         if self._client is None:
+            auth = SyncJWTAuth(key=self._key, kid=self._key_fingerprint, exp=self._jwt_expiration)
+
             self._client = httpx.Client(
+                auth=auth,
                 base_url=self._base_url,
                 headers=self._headers,
                 timeout=httpx.Timeout(self._timeout, pool=None),
@@ -77,7 +88,10 @@ class Client:
     def get_async_httpx_client(self) -> httpx.AsyncClient:
         """Get the underlying httpx.AsyncClient, constructing a new one if not previously set"""
         if self._async_client is None:
+            auth = AsyncJWTAuth(key=self._key, kid=self._key_fingerprint, exp=self._jwt_expiration)
+
             self._async_client = httpx.AsyncClient(
+                auth=auth,
                 base_url=self._base_url,
                 headers=self._headers,
                 timeout=httpx.Timeout(self._timeout, pool=None),
