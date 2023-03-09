@@ -74,7 +74,7 @@ params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
 {% endmacro %}
 
 {# The all the kwargs passed into an endpoint (and variants thereof)) #}
-{% macro arguments(endpoint, include_client=True) %}
+{% macro arguments(endpoint, include_client=True, skip_query_parameters=[]) %}
 {# path parameters #}
 {% for parameter in endpoint.path_parameters %}
 {{ parameter.to_string() }},
@@ -97,7 +97,7 @@ body: Union[
 ],
 {% endif %}
 {# query parameters #}
-{% for parameter in endpoint.query_parameters %}
+{% for parameter in endpoint.query_parameters if not parameter.name in skip_query_parameters %}
 {{ parameter.to_string() }},
 {% endfor %}
 {% for parameter in endpoint.header_parameters %}
@@ -124,7 +124,7 @@ body=body,
 {% endfor %}
 {% endmacro %}
 
-{% macro docstring_content(endpoint, return_string, is_detailed) %}
+{% macro docstring_content(endpoint, return_string, is_detailed, skip=[]) %}
 {% if endpoint.summary %}{{ endpoint.summary | wordwrap(100)}}
 
 {% endif -%}
@@ -138,7 +138,7 @@ body=body,
 {% set all_parameters = endpoint.list_all_parameters() %}
 {% if all_parameters %}
 Args:
-    {% for parameter in all_parameters %}
+    {% for parameter in all_parameters if parameter.name not in skip %}
     {{ parameter.to_docstring() | wordwrap(90) | indent(8) }}
     {% endfor %}
 
@@ -154,6 +154,6 @@ Returns:
 {% endif %}
 {% endmacro %}
 
-{% macro docstring(endpoint, return_string, is_detailed) %}
-{{ safe_docstring(docstring_content(endpoint, return_string, is_detailed)) }}
+{% macro docstring(endpoint, return_string, is_detailed, skip=[]) %}
+{{ safe_docstring(docstring_content(endpoint, return_string, is_detailed, skip)) }}
 {% endmacro %}

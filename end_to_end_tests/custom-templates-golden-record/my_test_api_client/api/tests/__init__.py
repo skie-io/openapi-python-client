@@ -14,6 +14,8 @@ from . import (
     no_response_tests_no_response_get,
     octet_stream_tests_octet_stream_get,
     octet_stream_tests_octet_stream_post,
+    paginated_results,
+    paginated_results_with_multiple_responses,
     post_form_data,
     post_form_data_inline,
     post_tests_json_body_string,
@@ -150,3 +152,17 @@ class TestsEndpoints:
             Test description with \
         """
         return description_with_backslash
+
+    @classmethod
+    def paginated_results(cls) -> types.ModuleType:
+        """
+        Endpoint with paginated results
+        """
+        return paginated_results
+
+    @classmethod
+    def paginated_results_with_multiple_responses(cls) -> types.ModuleType:
+        """
+        Endpoint with paginated results with multiple responses
+        """
+        return paginated_results_with_multiple_responses
