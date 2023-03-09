@@ -59,8 +59,18 @@ def test_custom_hooks() -> None:
         nonlocal response_hook_called
         response_hook_called = True
 
+    _test_key = """-----BEGIN EC PRIVATE KEY-----
+MHcCAQEEIIVEl1i9xtby2IlXDjrlvRNHcNkRXh3U1TNU99sb7uvaoAoGCCqGSM49
+AwEHoUQDQgAE3Ez3CzfCzPo3xHaVf/hYDnGrA+aV+iz0kwixt+CN+hyxsgmo7GZ6
+t2dglgM+cLzvkhzq1ULE5xoT6JI2/D5NRQ==
+-----END EC PRIVATE KEY-----"""
+    _test_key_fingerprint = "143edb698bd97dff684bf6b21b4ea18436930914"
+
     client = Client(
-        "http://localhost:3000", httpx_args={"event_hooks": {"request": [log_request], "response": [log_response]}}
+        "http://localhost:3000",
+        key=_test_key,
+        key_fingerprint=_test_key_fingerprint,
+        httpx_args={"event_hooks": {"request": [log_request], "response": [log_response]}},
     )
 
     post_body_multipart.sync_detailed(
