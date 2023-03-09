@@ -1,10 +1,10 @@
 from http import HTTPStatus
-from typing import Any, Optional, Union
+from typing import Any, Optional
 
 import httpx
 
 from ... import errors
-from ...client import AuthenticatedClient, Client
+from ...client import Client
 from ...models.a_model import AModel
 from ...types import Response
 
@@ -18,7 +18,7 @@ def _get_kwargs() -> dict[str, Any]:
     return _kwargs
 
 
-def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[AModel]:
+def _parse_response(*, client: Client, response: httpx.Response) -> Optional[AModel]:
     if response.status_code == 200:
         response_200 = AModel.from_dict(response.json())
 
@@ -29,7 +29,7 @@ def _parse_response(*, client: Union[AuthenticatedClient, Client], response: htt
         return None
 
 
-def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[AModel]:
+def _build_response(*, client: Client, response: httpx.Response) -> Response[AModel]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -40,7 +40,7 @@ def _build_response(*, client: Union[AuthenticatedClient, Client], response: htt
 
 def sync_detailed(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: Client,
 ) -> Response[AModel]:
     """Endpoint using predefined response
 
@@ -63,7 +63,7 @@ def sync_detailed(
 
 def sync(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: Client,
 ) -> Optional[AModel]:
     """Endpoint using predefined response
 
@@ -82,7 +82,7 @@ def sync(
 
 async def asyncio_detailed(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: Client,
 ) -> Response[AModel]:
     """Endpoint using predefined response
 
@@ -103,7 +103,7 @@ async def asyncio_detailed(
 
 async def asyncio(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: Client,
 ) -> Optional[AModel]:
     """Endpoint using predefined response
 

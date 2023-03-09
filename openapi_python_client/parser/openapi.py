@@ -146,7 +146,6 @@ class Endpoint:
     query_parameters: list[Property] = field(default_factory=list)
     path_parameters: list[Property] = field(default_factory=list)
     header_parameters: list[Property] = field(default_factory=list)
-    cookie_parameters: list[Property] = field(default_factory=list)
     responses: list[Response] = field(default_factory=list)
     bodies: list[Body] = field(default_factory=list)
     errors: list[ParseError] = field(default_factory=list)
@@ -246,7 +245,6 @@ class Endpoint:
             oai.ParameterLocation.QUERY: endpoint.query_parameters,
             oai.ParameterLocation.PATH: endpoint.path_parameters,
             oai.ParameterLocation.HEADER: endpoint.header_parameters,
-            oai.ParameterLocation.COOKIE: endpoint.cookie_parameters,
         }
 
         for param in data.parameters:
@@ -488,16 +486,11 @@ class Endpoint:
         yield from ((oai.ParameterLocation.PATH, param) for param in self.path_parameters)
         yield from ((oai.ParameterLocation.QUERY, param) for param in self.query_parameters)
         yield from ((oai.ParameterLocation.HEADER, param) for param in self.header_parameters)
-        yield from ((oai.ParameterLocation.COOKIE, param) for param in self.cookie_parameters)
 
     def list_all_parameters(self) -> list[Property]:
         """Return a list of all the parameters of this endpoint"""
         return (
-            self.path_parameters
-            + self.query_parameters
-            + self.header_parameters
-            + self.cookie_parameters
-            + [body.prop for body in self.bodies]
+            self.path_parameters + self.query_parameters + self.header_parameters + [body.prop for body in self.bodies]
         )
 
 

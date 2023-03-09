@@ -52,7 +52,6 @@ class PropertyProtocol(Protocol):
     _allowed_locations: ClassVar[set[oai.ParameterLocation]] = {
         oai.ParameterLocation.QUERY,
         oai.ParameterLocation.PATH,
-        oai.ParameterLocation.COOKIE,
     }
     default: Value | None
     python_name: PythonIdentifier

@@ -1,10 +1,10 @@
 from http import HTTPStatus
-from typing import Any, Optional, Union
+from typing import Any, Optional
 
 import httpx
 
 from ... import errors
-from ...client import AuthenticatedClient, Client
+from ...client import Client
 from ...models.get_models_allof_response_200 import GetModelsAllofResponse200
 from ...types import Response
 
@@ -18,9 +18,7 @@ def _get_kwargs() -> dict[str, Any]:
     return _kwargs
 
 
-def _parse_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Optional[GetModelsAllofResponse200]:
+def _parse_response(*, client: Client, response: httpx.Response) -> Optional[GetModelsAllofResponse200]:
     if response.status_code == 200:
         response_200 = GetModelsAllofResponse200.from_dict(response.json())
 
@@ -31,9 +29,7 @@ def _parse_response(
         return None
 
 
-def _build_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Response[GetModelsAllofResponse200]:
+def _build_response(*, client: Client, response: httpx.Response) -> Response[GetModelsAllofResponse200]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -44,7 +40,7 @@ def _build_response(
 
 def sync_detailed(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: Client,
 ) -> Response[GetModelsAllofResponse200]:
     """
     Raises:
@@ -66,7 +62,7 @@ def sync_detailed(
 
 def sync(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: Client,
 ) -> Optional[GetModelsAllofResponse200]:
     """
     Raises:
@@ -84,7 +80,7 @@ def sync(
 
 async def asyncio_detailed(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: Client,
 ) -> Response[GetModelsAllofResponse200]:
     """
     Raises:
@@ -104,7 +100,7 @@ async def asyncio_detailed(
 
 async def asyncio(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: Client,
 ) -> Optional[GetModelsAllofResponse200]:
     """
     Raises:
