@@ -26,7 +26,6 @@ class FloatProperty(PropertyProtocol):
     _allowed_locations: ClassVar[set[oai.ParameterLocation]] = {
         oai.ParameterLocation.QUERY,
         oai.ParameterLocation.PATH,
-        oai.ParameterLocation.COOKIE,
         oai.ParameterLocation.HEADER,
     }
     template: ClassVar[str] = "float_property.py.jinja"

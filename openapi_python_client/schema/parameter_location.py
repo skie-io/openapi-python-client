@@ -11,7 +11,6 @@ if sys.version_info >= (3, 11):
         QUERY = "query"
         PATH = "path"
         HEADER = "header"
-        COOKIE = "cookie"
 
 else:
     from enum import Enum
@@ -22,4 +21,3 @@ else:
         QUERY = "query"
         PATH = "path"
         HEADER = "header"
-        COOKIE = "cookie"

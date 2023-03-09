@@ -23,7 +23,6 @@ class NoneProperty(PropertyProtocol):
 
     _allowed_locations: ClassVar[set[oai.ParameterLocation]] = {
         oai.ParameterLocation.QUERY,
-        oai.ParameterLocation.COOKIE,
         oai.ParameterLocation.HEADER,
     }
     _type_string: ClassVar[str] = "None"

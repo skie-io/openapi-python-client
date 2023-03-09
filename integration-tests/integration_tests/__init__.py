@@ -1,8 +1,5 @@
 """A client library for accessing OpenAPI Test Server"""
 
-from .client import AuthenticatedClient, Client
+from .client import Client
 
-__all__ = (
-    "AuthenticatedClient",
-    "Client",
-)
+__all__ = ("Client",)

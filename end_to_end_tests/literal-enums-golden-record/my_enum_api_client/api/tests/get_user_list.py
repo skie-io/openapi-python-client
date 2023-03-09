@@ -4,7 +4,7 @@ from typing import Any, Optional, Union
 import httpx
 
 from ... import errors
-from ...client import AuthenticatedClient, Client
+from ...client import Client
 from ...models.a_model import AModel
 from ...models.an_enum import AnEnum
 from ...models.an_enum_with_null import AnEnumWithNull
@@ -66,9 +66,7 @@ def _get_kwargs(
     return _kwargs
 
 
-def _parse_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Optional[list["AModel"]]:
+def _parse_response(*, client: Client, response: httpx.Response) -> Optional[list["AModel"]]:
     if response.status_code == 200:
         response_200 = []
         _response_200 = response.json()
@@ -84,9 +82,7 @@ def _parse_response(
         return None
 
 
-def _build_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Response[list["AModel"]]:
+def _build_response(*, client: Client, response: httpx.Response) -> Response[list["AModel"]]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -97,7 +93,7 @@ def _build_response(
 
 def sync_detailed(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: Client,
     an_enum_value: list[AnEnum],
     an_enum_value_with_null: list[Union[AnEnumWithNull, None]],
     an_enum_value_with_only_null: list[None],
@@ -140,7 +136,7 @@ def sync_detailed(
 
 def sync(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: Client,
     an_enum_value: list[AnEnum],
     an_enum_value_with_null: list[Union[AnEnumWithNull, None]],
     an_enum_value_with_only_null: list[None],
@@ -178,7 +174,7 @@ def sync(
 
 async def asyncio_detailed(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: Client,
     an_enum_value: list[AnEnum],
     an_enum_value_with_null: list[Union[AnEnumWithNull, None]],
     an_enum_value_with_only_null: list[None],
@@ -219,7 +215,7 @@ async def asyncio_detailed(
 
 async def asyncio(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: Client,
     an_enum_value: list[AnEnum],
     an_enum_value_with_null: list[Union[AnEnumWithNull, None]],
     an_enum_value_with_only_null: list[None],

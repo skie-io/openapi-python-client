@@ -158,7 +158,7 @@ class TestEndpoint:
         property_schemas = mocker.MagicMock()
         mocker.patch(f"{MODULE_NAME}.property_from_data", return_value=(parse_error, property_schemas))
         param = oai.Parameter.model_construct(
-            name="test", required=True, param_schema=mocker.MagicMock(), param_in="cookie"
+            name="test", required=True, param_schema=mocker.MagicMock(), param_in="header"
         )
         config = MagicMock()
 

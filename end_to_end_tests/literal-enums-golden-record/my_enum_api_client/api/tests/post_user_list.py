@@ -1,10 +1,10 @@
 from http import HTTPStatus
-from typing import Any, Optional, Union
+from typing import Any, Optional
 
 import httpx
 
 from ... import errors
-from ...client import AuthenticatedClient, Client
+from ...client import Client
 from ...models.a_model import AModel
 from ...models.post_user_list_body import PostUserListBody
 from ...types import Response
@@ -29,9 +29,7 @@ def _get_kwargs(
     return _kwargs
 
 
-def _parse_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Optional[list["AModel"]]:
+def _parse_response(*, client: Client, response: httpx.Response) -> Optional[list["AModel"]]:
     if response.status_code == 200:
         response_200 = []
         _response_200 = response.json()
@@ -47,9 +45,7 @@ def _parse_response(
         return None
 
 
-def _build_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Response[list["AModel"]]:
+def _build_response(*, client: Client, response: httpx.Response) -> Response[list["AModel"]]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -60,7 +56,7 @@ def _build_response(
 
 def sync_detailed(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: Client,
     body: PostUserListBody,
 ) -> Response[list["AModel"]]:
     """Post List
@@ -91,7 +87,7 @@ def sync_detailed(
 
 def sync(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: Client,
     body: PostUserListBody,
 ) -> Optional[list["AModel"]]:
     """Post List
@@ -117,7 +113,7 @@ def sync(
 
 async def asyncio_detailed(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: Client,
     body: PostUserListBody,
 ) -> Response[list["AModel"]]:
     """Post List
@@ -146,7 +142,7 @@ async def asyncio_detailed(
 
 async def asyncio(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: Client,
     body: PostUserListBody,
 ) -> Optional[list["AModel"]]:
     """Post List
