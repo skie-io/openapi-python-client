@@ -4,7 +4,7 @@ from typing import Any, Dict, Optional, Union
 import httpx
 
 from ... import errors
-from ...client import AuthenticatedClient, Client
+from ...client import Client
 from ...models.post_parameters_header_response_200 import PostParametersHeaderResponse200
 from ...models.public_error import PublicError
 from ...types import Response
@@ -34,7 +34,7 @@ def _get_kwargs(
 
 
 def _parse_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+    *, client: Client, response: httpx.Response
 ) -> Optional[Union[PostParametersHeaderResponse200, PublicError]]:
     if response.status_code == HTTPStatus.OK:
         response_200 = PostParametersHeaderResponse200.from_dict(response.json())
@@ -51,7 +51,7 @@ def _parse_response(
 
 
 def _build_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+    *, client: Client, response: httpx.Response
 ) -> Response[Union[PostParametersHeaderResponse200, PublicError]]:
     return Response(
         status_code=HTTPStatus(response.status_code),
@@ -63,7 +63,7 @@ def _build_response(
 
 def sync_detailed(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: Client,
     boolean_header: bool,
     string_header: str,
     number_header: float,
@@ -100,7 +100,7 @@ def sync_detailed(
 
 def sync(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: Client,
     boolean_header: bool,
     string_header: str,
     number_header: float,
@@ -132,7 +132,7 @@ def sync(
 
 async def asyncio_detailed(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: Client,
     boolean_header: bool,
     string_header: str,
     number_header: float,
@@ -167,7 +167,7 @@ async def asyncio_detailed(
 
 async def asyncio(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: Client,
     boolean_header: bool,
     string_header: str,
     number_header: float,

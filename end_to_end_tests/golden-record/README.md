@@ -10,14 +10,6 @@ from my_test_api_client import Client
 client = Client(base_url="https://api.example.com")
 ```
 
-If the endpoints you're going to hit require authentication, use `AuthenticatedClient` instead:
-
-```python
-from my_test_api_client import AuthenticatedClient
-
-client = AuthenticatedClient(base_url="https://api.example.com", token="SuperSecretToken")
-```
-
 Now call your endpoint and use your models:
 
 ```python
@@ -41,26 +33,6 @@ from my_test_api_client.types import Response
 async with client as client:
     my_data: MyDataModel = await get_my_data_model.asyncio(client=client)
     response: Response[MyDataModel] = await get_my_data_model.asyncio_detailed(client=client)
-```
-
-By default, when you're calling an HTTPS API it will attempt to verify that SSL is working correctly. Using certificate verification is highly recommended most of the time, but sometimes you may need to authenticate to a server (especially an internal server) using a custom certificate bundle.
-
-```python
-client = AuthenticatedClient(
-    base_url="https://internal_api.example.com", 
-    token="SuperSecretToken",
-    verify_ssl="/path/to/certificate_bundle.pem",
-)
-```
-
-You can also disable certificate validation altogether, but beware that **this is a security risk**.
-
-```python
-client = AuthenticatedClient(
-    base_url="https://internal_api.example.com", 
-    token="SuperSecretToken", 
-    verify_ssl=False
-)
 ```
 
 Things to know:
@@ -105,7 +77,7 @@ from my_test_api_client import Client
 client = Client(
     base_url="https://api.example.com",
 )
-# Note that base_url needs to be re-set, as would any shared cookies, headers, etc.
+# Note that base_url needs to be re-set, as would any shared headers, etc.
 client.set_httpx_client(httpx.Client(base_url="https://api.example.com", proxies="http://localhost:8030"))
 ```
 

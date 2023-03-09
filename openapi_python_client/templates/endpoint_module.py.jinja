@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Optional, Union, cast
 
 import httpx
 
-from ...client import AuthenticatedClient, Client
+from ...client import Client
 from ...types import Response, UNSET
 from ... import errors
 
@@ -11,7 +11,7 @@ from ... import errors
 {{ relative }}
 {% endfor %}
 
-{% from "endpoint_macros.py.jinja" import header_params, cookie_params, query_params, json_body, multipart_body,
+{% from "endpoint_macros.py.jinja" import header_params, query_params, json_body, multipart_body,
     arguments, client, kwargs, parse_response, docstring %}
 
 {% set return_string = endpoint.response_type() %}
@@ -21,8 +21,6 @@ def _get_kwargs(
     {{ arguments(endpoint, include_client=False) | indent(4) }}
 ) -> Dict[str, Any]:
     {{ header_params(endpoint) | indent(4) }}
-
-    {{ cookie_params(endpoint) | indent(4) }}
 
     {{ query_params(endpoint) | indent(4) }}
 
@@ -54,13 +52,10 @@ def _get_kwargs(
     {% if endpoint.header_parameters %}
         "headers": headers,
     {% endif %}
-    {% if endpoint.cookie_parameters %}
-        "cookies": cookies,
-    {% endif %}
     }
 
 
-def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[{{ return_string }}]:
+def _parse_response(*, client: Client, response: httpx.Response) -> Optional[{{ return_string }}]:
     {% for response in endpoint.responses %}
     if response.status_code == HTTPStatus.{{ response.status_code.name }}:
         {% if parsed_responses %}{% import "property_templates/" + response.prop.template as prop_template %}
@@ -80,7 +75,7 @@ def _parse_response(*, client: Union[AuthenticatedClient, Client], response: htt
         return None
 
 
-def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[{{ return_string }}]:
+def _build_response(*, client: Client, response: httpx.Response) -> Response[{{ return_string }}]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,

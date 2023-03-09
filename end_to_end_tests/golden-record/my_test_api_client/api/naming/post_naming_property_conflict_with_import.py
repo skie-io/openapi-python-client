@@ -1,10 +1,10 @@
 from http import HTTPStatus
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, Optional
 
 import httpx
 
 from ... import errors
-from ...client import AuthenticatedClient, Client
+from ...client import Client
 from ...models.post_naming_property_conflict_with_import_json_body import PostNamingPropertyConflictWithImportJsonBody
 from ...models.post_naming_property_conflict_with_import_response_200 import (
     PostNamingPropertyConflictWithImportResponse200,
@@ -26,7 +26,7 @@ def _get_kwargs(
 
 
 def _parse_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+    *, client: Client, response: httpx.Response
 ) -> Optional[PostNamingPropertyConflictWithImportResponse200]:
     if response.status_code == HTTPStatus.OK:
         response_200 = PostNamingPropertyConflictWithImportResponse200.from_dict(response.json())
@@ -39,7 +39,7 @@ def _parse_response(
 
 
 def _build_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+    *, client: Client, response: httpx.Response
 ) -> Response[PostNamingPropertyConflictWithImportResponse200]:
     return Response(
         status_code=HTTPStatus(response.status_code),
@@ -51,7 +51,7 @@ def _build_response(
 
 def sync_detailed(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: Client,
     json_body: PostNamingPropertyConflictWithImportJsonBody,
 ) -> Response[PostNamingPropertyConflictWithImportResponse200]:
     """
@@ -79,7 +79,7 @@ def sync_detailed(
 
 def sync(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: Client,
     json_body: PostNamingPropertyConflictWithImportJsonBody,
 ) -> Optional[PostNamingPropertyConflictWithImportResponse200]:
     """
@@ -102,7 +102,7 @@ def sync(
 
 async def asyncio_detailed(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: Client,
     json_body: PostNamingPropertyConflictWithImportJsonBody,
 ) -> Response[PostNamingPropertyConflictWithImportResponse200]:
     """
@@ -128,7 +128,7 @@ async def asyncio_detailed(
 
 async def asyncio(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: Client,
     json_body: PostNamingPropertyConflictWithImportJsonBody,
 ) -> Optional[PostNamingPropertyConflictWithImportResponse200]:
     """
