@@ -143,3 +143,55 @@ async def asyncio(
         {{ kwargs(endpoint) }}
     )).parsed
 {% endif %}
+
+{% if endpoint.paginated %}
+def fetch_all(
+    {{ arguments(endpoint, skip_query_parameters=["next_page_token"]) | indent(4) }}
+) -> {{ endpoint.paginated_data_model.get_type_string(quoted=False) }}:
+    {{ docstring(endpoint, return_string, skip=["next_page_token"]) | indent(4) }}
+
+    next_page_token: Union[Unset, str] = UNSET
+    data: {{ endpoint.paginated_data_model.get_type_string(quoted=False) }} = []
+
+    while True:
+        page = sync(
+            {{ kwargs(endpoint) }}
+        )
+
+        if not isinstance(page, {{ endpoint.paginated_model.get_type_string(quoted=False) }}):
+            raise errors.PaginationError({{ endpoint.paginated_model.get_type_string(quoted=False) }}, page)
+
+        data.extend(page.data)
+
+        if page.next_page_token:
+            next_page_token = page.next_page_token
+        else:
+            break
+
+    return data
+
+async def async_fetch_all(
+    {{ arguments(endpoint, skip_query_parameters=["next_page_token"]) | indent(4) }}
+) -> {{ endpoint.paginated_data_model.get_type_string(quoted=False) }}:
+    {{ docstring(endpoint, return_string, skip=["next_page_token"]) | indent(4) }}
+
+    next_page_token: Union[Unset, str] = UNSET
+    data: {{ endpoint.paginated_data_model.get_type_string(quoted=False) }} = []
+
+    while True:
+        page = await asyncio(
+            {{ kwargs(endpoint) }}
+        )
+
+        if not isinstance(page, {{ endpoint.paginated_model.get_type_string(quoted=False) }}):
+            raise errors.PaginationError({{ endpoint.paginated_model.get_type_string(quoted=False) }}, page)
+
+        data.extend(page.data)
+
+        if page.next_page_token:
+            next_page_token = page.next_page_token
+        else:
+            break
+
+    return data
+{% endif %}

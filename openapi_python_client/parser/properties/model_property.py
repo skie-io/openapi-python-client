@@ -210,6 +210,14 @@ class ModelProperty(PropertyProtocol):
             return type_string
         return f"Union[Unset, {type_string}]"
 
+    def get_model_for_required_property(self, name: str) -> Property | None:
+        """Returns a required model identified by name."""
+        for prop in self.required_properties:
+            if prop.name == name:
+                return prop
+
+        return None
+
 
 from .property import Property  # noqa: E402
 

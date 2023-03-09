@@ -15,6 +15,7 @@ from .errors import GeneratorError, ParseError, PropertyError
 from .properties import (
     Class,
     EnumProperty,
+    ListProperty,
     ModelProperty,
     Parameters,
     Property,
@@ -138,6 +139,10 @@ class Endpoint:
     responses: List[Response] = field(default_factory=list)
     bodies: List[Body] = field(default_factory=list)
     errors: List[ParseError] = field(default_factory=list)
+
+    paginated: bool = False
+    paginated_model: Optional[ModelProperty] = None
+    paginated_data_model: Optional[ListProperty] = None
 
     @staticmethod
     def _add_responses(
@@ -444,6 +449,9 @@ class Endpoint:
                 parameters,
             )
 
+        if isinstance(result, Endpoint):
+            result.init_pagination()
+
         return result, schemas, parameters
 
     def response_type(self) -> str:
@@ -471,6 +479,41 @@ class Endpoint:
             + self.cookie_parameters
             + [body.prop for body in self.bodies]
         )
+
+    def _get_model_for_http_status(self, status: HTTPStatus) -> Optional[ModelProperty]:
+        for response in self.responses:
+            if response.status_code == status and isinstance(response.prop, ModelProperty):
+                return response.prop
+
+        return None
+
+    def init_pagination(self) -> None:
+        """Initializes pagination attributes. By convention, an endpoint is
+        paginated when it contains all of the following requirements:
+
+        * a query string parameter named "next_page_token"
+        * a response model for HTTP 200
+        * a required and non-nullable attribute named "data" in the response model
+        * the "data" attribute needs to be a list
+        """
+        if not any(p for p in self.query_parameters if p.name == "next_page_token"):
+            return
+
+        if (http_200_model := self._get_model_for_http_status(HTTPStatus.OK)) is None:
+            return
+
+        if (http_200_data_model := http_200_model.get_model_for_required_property("data")) is None:
+            return
+
+        if not isinstance(http_200_data_model, ListProperty):
+            return
+
+        self.paginated = True
+        self.paginated_model = http_200_model
+        self.paginated_data_model = http_200_data_model
+
+        self.relative_imports |= self.paginated_data_model.get_imports(prefix=models_relative_prefix)
+        self.relative_imports |= self.paginated_data_model.get_lazy_imports(prefix=models_relative_prefix)
 
 
 @dataclass

@@ -1568,6 +1568,76 @@
           }
         }
       }
+    },
+    "/tests/paginated": {
+      "get": {
+        "tags": [
+          "tests"
+        ],
+        "summary": "Endpoint with paginated results",
+        "operationId": "paginated_results",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "next_page_token",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tests/paginated-with-multiple-responses": {
+      "get": {
+        "tags": [
+          "tests"
+        ],
+        "summary": "Endpoint with paginated results with multiple responses",
+        "operationId": "paginated_results_with_multiple_responses",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "next_page_token",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Error Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedResultError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -2630,6 +2700,32 @@
         "type": "object",
         "properties": {
           "modelType": {
+            "type": "string"
+          }
+        }
+      },
+      "PaginatedResult": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "next_page_token": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "PaginatedResultError": {
+        "type": "object",
+        "properties": {
+          "message": {
             "type": "string"
           }
         }
