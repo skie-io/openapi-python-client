@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from typing import Any, Dict, Optional, Union, cast
+from typing import Any, Dict, Union, cast
 
 import httpx
 
@@ -23,7 +23,7 @@ def _get_kwargs(
     }
 
 
-def _parse_response(*, client: Client, response: httpx.Response) -> Optional[Union[Any, HTTPValidationError]]:
+def _parse_response(*, client: Client, response: httpx.Response) -> Union[Any, HTTPValidationError]:
     if response.status_code == HTTPStatus.OK:
         response_200 = cast(Any, response.json())
         return response_200
@@ -31,10 +31,8 @@ def _parse_response(*, client: Client, response: httpx.Response) -> Optional[Uni
         response_422 = HTTPValidationError.from_dict(response.json())
 
         return response_422
-    if client.raise_on_unexpected_status:
-        raise errors.UnexpectedStatus(response.status_code, response.content)
     else:
-        return None
+        raise errors.UnexpectedStatus(response)
 
 
 def _build_response(*, client: Client, response: httpx.Response) -> Response[Union[Any, HTTPValidationError]]:
@@ -59,7 +57,6 @@ def sync_detailed(
         multipart_data (BodyUploadFileTestsUploadPost):
 
     Raises:
-        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
@@ -81,7 +78,7 @@ def sync(
     *,
     client: Client,
     multipart_data: BodyUploadFileTestsUploadPost,
-) -> Optional[Union[Any, HTTPValidationError]]:
+) -> Union[Any, HTTPValidationError]:
     """Upload File
 
      Upload a file
@@ -90,7 +87,6 @@ def sync(
         multipart_data (BodyUploadFileTestsUploadPost):
 
     Raises:
-        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
@@ -116,7 +112,6 @@ async def asyncio_detailed(
         multipart_data (BodyUploadFileTestsUploadPost):
 
     Raises:
-        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
@@ -136,7 +131,7 @@ async def asyncio(
     *,
     client: Client,
     multipart_data: BodyUploadFileTestsUploadPost,
-) -> Optional[Union[Any, HTTPValidationError]]:
+) -> Union[Any, HTTPValidationError]:
     """Upload File
 
      Upload a file
@@ -145,7 +140,6 @@ async def asyncio(
         multipart_data (BodyUploadFileTestsUploadPost):
 
     Raises:
-        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
