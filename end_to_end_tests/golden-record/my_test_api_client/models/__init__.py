@@ -63,6 +63,9 @@ from .model_with_union_property_inlined import ModelWithUnionPropertyInlined
 from .model_with_union_property_inlined_fruit_type_0 import ModelWithUnionPropertyInlinedFruitType0
 from .model_with_union_property_inlined_fruit_type_1 import ModelWithUnionPropertyInlinedFruitType1
 from .none import None_
+from .paginated_result import PaginatedResult
+from .paginated_result_data_item import PaginatedResultDataItem
+from .paginated_result_error import PaginatedResultError
 from .post_form_data_inline_data import PostFormDataInlineData
 from .post_naming_property_conflict_with_import_json_body import PostNamingPropertyConflictWithImportJsonBody
 from .post_naming_property_conflict_with_import_response_200 import PostNamingPropertyConflictWithImportResponse200
@@ -130,6 +133,9 @@ __all__ = (
     "ModelWithUnionPropertyInlinedFruitType0",
     "ModelWithUnionPropertyInlinedFruitType1",
     "None_",
+    "PaginatedResult",
+    "PaginatedResultDataItem",
+    "PaginatedResultError",
     "PostFormDataInlineData",
     "PostNamingPropertyConflictWithImportJsonBody",
     "PostNamingPropertyConflictWithImportResponse200",

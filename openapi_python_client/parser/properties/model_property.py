@@ -118,6 +118,17 @@ class ModelProperty(Property):
 
         return f"Union[Unset, {type_string}]"
 
+    def get_model_for_required_property(self, name: str) -> Property | None:
+        """Returns a required model identified by name."""
+        if not self.required_properties:
+            return None
+
+        for prop in self.required_properties:
+            if prop.name == name and not prop.nullable:
+                return prop
+
+        return None
+
 
 def _values_are_subset(first: EnumProperty, second: EnumProperty) -> bool:
     return set(first.values.items()) <= set(second.values.items())
