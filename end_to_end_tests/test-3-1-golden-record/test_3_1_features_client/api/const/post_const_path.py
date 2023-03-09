@@ -4,7 +4,7 @@ from typing import Any, Dict, Literal, Optional, Union, cast
 import httpx
 
 from ... import errors
-from ...client import AuthenticatedClient, Client
+from ...client import Client
 from ...models.post_const_path_body import PostConstPathBody
 from ...types import UNSET, Response, Unset
 
@@ -42,7 +42,7 @@ def _get_kwargs(
 
 
 def _parse_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+    *, client: Client, response: httpx.Response
 ) -> Optional[Literal["Why have a fixed response? I dunno"]]:
     if response.status_code == HTTPStatus.OK:
         response_200 = cast(Literal["Why have a fixed response? I dunno"], response.json())
@@ -58,7 +58,7 @@ def _parse_response(
 
 
 def _build_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+    *, client: Client, response: httpx.Response
 ) -> Response[Literal["Why have a fixed response? I dunno"]]:
     return Response(
         status_code=HTTPStatus(response.status_code),
@@ -71,7 +71,7 @@ def _build_response(
 def sync_detailed(
     path: Literal["this goes in the path"],
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: Client,
     body: PostConstPathBody,
     required_query: Literal["this always goes in the query"],
     optional_query: Union[Literal["this sometimes goes in the query"], Unset] = UNSET,
@@ -108,7 +108,7 @@ def sync_detailed(
 def sync(
     path: Literal["this goes in the path"],
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: Client,
     body: PostConstPathBody,
     required_query: Literal["this always goes in the query"],
     optional_query: Union[Literal["this sometimes goes in the query"], Unset] = UNSET,
@@ -140,7 +140,7 @@ def sync(
 async def asyncio_detailed(
     path: Literal["this goes in the path"],
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: Client,
     body: PostConstPathBody,
     required_query: Literal["this always goes in the query"],
     optional_query: Union[Literal["this sometimes goes in the query"], Unset] = UNSET,
@@ -175,7 +175,7 @@ async def asyncio_detailed(
 async def asyncio(
     path: Literal["this goes in the path"],
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: Client,
     body: PostConstPathBody,
     required_query: Literal["this always goes in the query"],
     optional_query: Union[Literal["this sometimes goes in the query"], Unset] = UNSET,

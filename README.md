@@ -69,7 +69,7 @@ _Be forewarned, this is a beta-level feature in the sense that the API exposed i
 1. A `pyproject.toml` file, optionally with [Poetry] metadata (default), [PDM] (with `--meta=pdm`), or only [Ruff] config.
 2. A `README.md` you'll most definitely need to update with your project's details
 3. A Python module named just like the auto-generated project name (e.g. "my_api_client") which contains:
-   1. A `client` module which will have both a `Client` class and an `AuthenticatedClient` class. You'll need these
+   1. A `client` module which will have a `Client` class. You'll need it
       for calling the functions in the `api` module.
    2. An `api` module which will contain one module for each tag in your OpenAPI spec, as well as a `default` module
       for endpoints without a tag. Each of these modules in turn contains one function for calling each endpoint.

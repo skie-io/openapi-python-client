@@ -1,10 +1,10 @@
 from http import HTTPStatus
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, Optional
 
 import httpx
 
 from ... import errors
-from ...client import AuthenticatedClient, Client
+from ...client import Client
 from ...models.test_inline_objects_body import TestInlineObjectsBody
 from ...models.test_inline_objects_response_200 import TestInlineObjectsResponse200
 from ...types import Response
@@ -30,9 +30,7 @@ def _get_kwargs(
     return _kwargs
 
 
-def _parse_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Optional[TestInlineObjectsResponse200]:
+def _parse_response(*, client: Client, response: httpx.Response) -> Optional[TestInlineObjectsResponse200]:
     if response.status_code == HTTPStatus.OK:
         response_200 = TestInlineObjectsResponse200.from_dict(response.json())
 
@@ -43,9 +41,7 @@ def _parse_response(
         return None
 
 
-def _build_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Response[TestInlineObjectsResponse200]:
+def _build_response(*, client: Client, response: httpx.Response) -> Response[TestInlineObjectsResponse200]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -56,7 +52,7 @@ def _build_response(
 
 def sync_detailed(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: Client,
     body: TestInlineObjectsBody,
 ) -> Response[TestInlineObjectsResponse200]:
     """Test Inline Objects
@@ -85,7 +81,7 @@ def sync_detailed(
 
 def sync(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: Client,
     body: TestInlineObjectsBody,
 ) -> Optional[TestInlineObjectsResponse200]:
     """Test Inline Objects
@@ -109,7 +105,7 @@ def sync(
 
 async def asyncio_detailed(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: Client,
     body: TestInlineObjectsBody,
 ) -> Response[TestInlineObjectsResponse200]:
     """Test Inline Objects
@@ -136,7 +132,7 @@ async def asyncio_detailed(
 
 async def asyncio(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: Client,
     body: TestInlineObjectsBody,
 ) -> Optional[TestInlineObjectsResponse200]:
     """Test Inline Objects

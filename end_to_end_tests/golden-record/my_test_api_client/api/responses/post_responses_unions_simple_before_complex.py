@@ -1,10 +1,10 @@
 from http import HTTPStatus
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, Optional
 
 import httpx
 
 from ... import errors
-from ...client import AuthenticatedClient, Client
+from ...client import Client
 from ...models.post_responses_unions_simple_before_complex_response_200 import (
     PostResponsesUnionsSimpleBeforeComplexResponse200,
 )
@@ -21,7 +21,7 @@ def _get_kwargs() -> Dict[str, Any]:
 
 
 def _parse_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+    *, client: Client, response: httpx.Response
 ) -> Optional[PostResponsesUnionsSimpleBeforeComplexResponse200]:
     if response.status_code == HTTPStatus.OK:
         response_200 = PostResponsesUnionsSimpleBeforeComplexResponse200.from_dict(response.json())
@@ -34,7 +34,7 @@ def _parse_response(
 
 
 def _build_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+    *, client: Client, response: httpx.Response
 ) -> Response[PostResponsesUnionsSimpleBeforeComplexResponse200]:
     return Response(
         status_code=HTTPStatus(response.status_code),
@@ -46,7 +46,7 @@ def _build_response(
 
 def sync_detailed(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: Client,
 ) -> Response[PostResponsesUnionsSimpleBeforeComplexResponse200]:
     """Regression test for #603
 
@@ -69,7 +69,7 @@ def sync_detailed(
 
 def sync(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: Client,
 ) -> Optional[PostResponsesUnionsSimpleBeforeComplexResponse200]:
     """Regression test for #603
 
@@ -88,7 +88,7 @@ def sync(
 
 async def asyncio_detailed(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: Client,
 ) -> Response[PostResponsesUnionsSimpleBeforeComplexResponse200]:
     """Regression test for #603
 
@@ -109,7 +109,7 @@ async def asyncio_detailed(
 
 async def asyncio(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: Client,
 ) -> Optional[PostResponsesUnionsSimpleBeforeComplexResponse200]:
     """Regression test for #603
 

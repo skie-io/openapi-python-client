@@ -4,7 +4,7 @@ from typing import Any, Dict, Optional, Union
 import httpx
 
 from ... import errors
-from ...client import AuthenticatedClient, Client
+from ...client import Client
 from ...models.post_body_multipart_body import PostBodyMultipartBody
 from ...models.post_body_multipart_response_200 import PostBodyMultipartResponse200
 from ...models.public_error import PublicError
@@ -31,7 +31,7 @@ def _get_kwargs(
 
 
 def _parse_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+    *, client: Client, response: httpx.Response
 ) -> Optional[Union[PostBodyMultipartResponse200, PublicError]]:
     if response.status_code == HTTPStatus.OK:
         response_200 = PostBodyMultipartResponse200.from_dict(response.json())
@@ -48,7 +48,7 @@ def _parse_response(
 
 
 def _build_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+    *, client: Client, response: httpx.Response
 ) -> Response[Union[PostBodyMultipartResponse200, PublicError]]:
     return Response(
         status_code=HTTPStatus(response.status_code),
@@ -60,7 +60,7 @@ def _build_response(
 
 def sync_detailed(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: Client,
     body: PostBodyMultipartBody,
 ) -> Response[Union[PostBodyMultipartResponse200, PublicError]]:
     """
@@ -88,7 +88,7 @@ def sync_detailed(
 
 def sync(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: Client,
     body: PostBodyMultipartBody,
 ) -> Optional[Union[PostBodyMultipartResponse200, PublicError]]:
     """
@@ -111,7 +111,7 @@ def sync(
 
 async def asyncio_detailed(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: Client,
     body: PostBodyMultipartBody,
 ) -> Response[Union[PostBodyMultipartResponse200, PublicError]]:
     """
@@ -137,7 +137,7 @@ async def asyncio_detailed(
 
 async def asyncio(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: Client,
     body: PostBodyMultipartBody,
 ) -> Optional[Union[PostBodyMultipartResponse200, PublicError]]:
     """

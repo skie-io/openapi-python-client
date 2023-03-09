@@ -1,10 +1,10 @@
 from http import HTTPStatus
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, Optional
 
 import httpx
 
 from ... import errors
-from ...client import AuthenticatedClient, Client
+from ...client import Client
 from ...models.mixed_case_response_200 import MixedCaseResponse200
 from ...types import UNSET, Response
 
@@ -31,9 +31,7 @@ def _get_kwargs(
     return _kwargs
 
 
-def _parse_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Optional[MixedCaseResponse200]:
+def _parse_response(*, client: Client, response: httpx.Response) -> Optional[MixedCaseResponse200]:
     if response.status_code == HTTPStatus.OK:
         response_200 = MixedCaseResponse200.from_dict(response.json())
 
@@ -44,9 +42,7 @@ def _parse_response(
         return None
 
 
-def _build_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Response[MixedCaseResponse200]:
+def _build_response(*, client: Client, response: httpx.Response) -> Response[MixedCaseResponse200]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -57,7 +53,7 @@ def _build_response(
 
 def sync_detailed(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: Client,
     mixed_case: str,
     mixedCase: str,
 ) -> Response[MixedCaseResponse200]:
@@ -88,7 +84,7 @@ def sync_detailed(
 
 def sync(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: Client,
     mixed_case: str,
     mixedCase: str,
 ) -> Optional[MixedCaseResponse200]:
@@ -114,7 +110,7 @@ def sync(
 
 async def asyncio_detailed(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: Client,
     mixed_case: str,
     mixedCase: str,
 ) -> Response[MixedCaseResponse200]:
@@ -143,7 +139,7 @@ async def asyncio_detailed(
 
 async def asyncio(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: Client,
     mixed_case: str,
     mixedCase: str,
 ) -> Optional[MixedCaseResponse200]:

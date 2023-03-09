@@ -606,28 +606,6 @@ paths:
             text/plain:
               schema:
                 type: string
-  /auth/token_with_cookie:
-    get:
-      tags:
-        - tests
-      summary: TOKEN_WITH_COOKIE
-      description: Test optional cookie parameters
-      operationId: token_with_cookie_auth_token_with_cookie_get
-      parameters:
-        - required: true
-          schema:
-            title: Token
-            type: string
-          name: MyToken
-          in: cookie
-      responses:
-        "200":
-          description: Successful Response
-          content:
-            application/json:
-              schema: {}
-        "401":
-          description: Unauthorized
   /common_parameters:
     parameters:
       - schema:
@@ -687,10 +665,6 @@ paths:
             type: string
         - name: param
           in: header
-          schema:
-            type: string
-        - name: param
-          in: cookie
           schema:
             type: string
         - name: param
@@ -938,7 +912,6 @@ paths:
         - $ref: '#/components/parameters/string-param'
         - $ref: '#/components/parameters/integer-param'
         - $ref: '#/components/parameters/header-param'
-        - $ref: '#/components/parameters/cookie-param'
         - $ref: '#/components/parameters/path-param'
       responses:
         "200":
@@ -1753,12 +1726,6 @@ components:
         oneOf:
           - type: string
           - type: "null"
-    cookie-param:
-      name: cookie param
-      in: cookie
-      required: false
-      schema:
-        type: string
     path-param:
       name: path_param
       in: path

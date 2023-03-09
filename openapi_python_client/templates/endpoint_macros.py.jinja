@@ -19,21 +19,6 @@ headers: Dict[str, Any] = {}
 {% endif %}
 {% endmacro %}
 
-{% macro cookie_params(endpoint) %}
-{% if endpoint.cookie_parameters %}
-cookies = {}
-    {% for parameter in endpoint.cookie_parameters %}
-        {% if parameter.required %}
-cookies["{{ parameter.name}}"] = {{ parameter.python_name }}
-        {% else %}
-if {{ parameter.python_name }} is not UNSET:
-    cookies["{{ parameter.name}}"] = {{ parameter.python_name }}
-        {% endif %}
-
-    {% endfor %}
-{% endif %}
-{% endmacro %}
-
 
 {% macro query_params(endpoint) %}
 {% if endpoint.query_parameters %}
@@ -99,11 +84,7 @@ params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
 {% endif %}
 {# Proper client based on whether or not the endpoint requires authentication #}
 {% if include_client %}
-{% if endpoint.requires_security %}
-client: AuthenticatedClient,
-{% else %}
-client: Union[AuthenticatedClient, Client],
-{% endif %}
+client: Client,
 {% endif %}
 {# Any allowed bodies #}
 {% if endpoint.bodies | length == 1 %}
@@ -120,10 +101,6 @@ body: Union[
 {{ parameter.to_string() }},
 {% endfor %}
 {% for parameter in endpoint.header_parameters %}
-{{ parameter.to_string() }},
-{% endfor %}
-{# cookie parameters #}
-{% for parameter in endpoint.cookie_parameters %}
 {{ parameter.to_string() }},
 {% endfor %}
 {% endmacro %}
@@ -143,9 +120,6 @@ body=body,
 {{ parameter.python_name }}={{ parameter.python_name }},
 {% endfor %}
 {% for parameter in endpoint.header_parameters %}
-{{ parameter.python_name }}={{ parameter.python_name }},
-{% endfor %}
-{% for parameter in endpoint.cookie_parameters %}
 {{ parameter.python_name }}={{ parameter.python_name }},
 {% endfor %}
 {% endmacro %}
