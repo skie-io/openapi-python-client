@@ -3,6 +3,8 @@ from typing import Any, Optional
 import httpx
 from attrs import define, field
 
+from .jwt import AsyncJWTAuth, SyncJWTAuth
+
 
 @define
 class Client:
@@ -32,11 +34,17 @@ class Client:
     _httpx_args: dict[str, Any] = field(factory=dict, kw_only=True, alias="httpx_args")
     _client: Optional[httpx.Client] = field(default=None, init=False)
     _async_client: Optional[httpx.AsyncClient] = field(default=None, init=False)
+    _key: str = field(kw_only=True)
+    _key_fingerprint: str = field(kw_only=True)
+    _jwt_expiration: int = field(default=60, kw_only=True)
 
     def get_httpx_client(self) -> httpx.Client:
         """Get the underlying httpx.Client, constructing a new one if not previously set"""
         if self._client is None:
+            auth = SyncJWTAuth(key=self._key, kid=self._key_fingerprint, exp=self._jwt_expiration)
+
             self._client = httpx.Client(
+                auth=auth,
                 base_url=self._base_url,
                 headers=self._headers,
                 timeout=httpx.Timeout(self._timeout, pool=None),
@@ -57,7 +65,10 @@ class Client:
     def get_async_httpx_client(self) -> httpx.AsyncClient:
         """Get the underlying httpx.AsyncClient, constructing a new one if not previously set"""
         if self._async_client is None:
+            auth = AsyncJWTAuth(key=self._key, kid=self._key_fingerprint, exp=self._jwt_expiration)
+
             self._async_client = httpx.AsyncClient(
+                auth=auth,
                 base_url=self._base_url,
                 headers=self._headers,
                 timeout=httpx.Timeout(self._timeout, pool=None),

@@ -3,6 +3,8 @@ from typing import Any, Union, Optional
 from attrs import define, field
 import httpx
 
+from .jwt import AsyncJWTAuth, SyncJWTAuth
+
 
 {% set attrs_info = {
     "raise_on_unexpected_status": namespace(
@@ -15,6 +17,9 @@ import httpx
     "token": namespace(type="str", default="", docstring="The token to use for authentication"),
     "prefix": namespace(type="str", default='"Bearer"', docstring="The prefix to use for the Authorization header"),
     "auth_header_name": namespace(type="str", default='"Authorization"', docstring="The name of the Authorization header"),
+    "key": namespace(type="str", default="", docstring="The private key used to sign the JWT encoded with ES256."),
+    "key_fingerprint": namespace(type="str", default="", docstring="Key ID or fingerprint."),
+    "jwt_expiration": namespace(type="int", default=60, docstring="Controls the expiration time for a JWT. 60 seconds by default."),
 } %}
 
 {% macro attr_in_class_docstring(name) %}
@@ -52,6 +57,9 @@ class Client:
 
     Attributes:
         {{ attr_in_class_docstring("raise_on_unexpected_status") | wordwrap(101) | indent(12) }}
+        {{ attr_in_class_docstring("key") | wordwrap(101) | indent(12) }}
+        {{ attr_in_class_docstring("key_fingerprint") | wordwrap(101) | indent(12) }}
+        {{ attr_in_class_docstring("jwt_expiration") | wordwrap(101) | indent(12) }}
 {% endif %}
     """
 {% macro attributes() %}
@@ -63,6 +71,10 @@ class Client:
     _httpx_args: dict[str, Any] = field(factory=dict, kw_only=True, alias="httpx_args")
     _client: Optional[httpx.Client] = field(default=None, init=False)
     _async_client: Optional[httpx.AsyncClient] = field(default=None, init=False)
+    _key: str = field(kw_only=True)
+    _key_fingerprint: str = field(kw_only=True)
+    _jwt_expiration: int = field(default=60, kw_only=True)
+
 {% endmacro %}{{ attributes() }}
 {% macro httpx_stuff(name, custom_constructor=None) %}
     def get_httpx_client(self) -> httpx.Client:
@@ -71,7 +83,10 @@ class Client:
         {% if custom_constructor %}
             {{ custom_constructor | indent(12) }}
         {% endif %}
+            auth = SyncJWTAuth(key=self._key, kid=self._key_fingerprint, exp=self._jwt_expiration)
+
             self._client = httpx.Client(
+                auth=auth,
                 base_url=self._base_url,
                 headers=self._headers,
                 timeout=httpx.Timeout(self._timeout, pool=None),
@@ -95,7 +110,10 @@ class Client:
         {% if custom_constructor %}
             {{ custom_constructor | indent(12) }}
         {% endif %}
+            auth = AsyncJWTAuth(key=self._key, kid=self._key_fingerprint, exp=self._jwt_expiration)
+
             self._async_client = httpx.AsyncClient(
+                auth=auth,
                 base_url=self._base_url,
                 headers=self._headers,
                 timeout=httpx.Timeout(self._timeout, pool=None),
