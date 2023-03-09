@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from typing import Any, Literal, Optional, Union, cast
+from typing import Any, Literal, Union, cast
 
 import httpx
 
@@ -41,9 +41,7 @@ def _get_kwargs(
     return _kwargs
 
 
-def _parse_response(
-    *, client: Client, response: httpx.Response
-) -> Optional[Literal["Why have a fixed response? I dunno"]]:
+def _parse_response(*, client: Client, response: httpx.Response) -> Literal["Why have a fixed response? I dunno"]:
     if response.status_code == 200:
         response_200 = cast(Literal["Why have a fixed response? I dunno"], response.json())
         if response_200 != "Why have a fixed response? I dunno":
@@ -51,10 +49,7 @@ def _parse_response(
                 f"response_200 must match const 'Why have a fixed response? I dunno', got '{response_200}'"
             )
         return response_200
-    if client.raise_on_unexpected_status:
-        raise errors.UnexpectedStatus(response.status_code, response.content)
-    else:
-        return None
+    raise errors.UnexpectedStatus(response)
 
 
 def _build_response(
@@ -84,7 +79,6 @@ def sync_detailed(
         body (PostConstPathBody):
 
     Raises:
-        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
@@ -112,7 +106,7 @@ def sync(
     body: PostConstPathBody,
     required_query: Literal["this always goes in the query"],
     optional_query: Union[Literal["this sometimes goes in the query"], Unset] = UNSET,
-) -> Optional[Literal["Why have a fixed response? I dunno"]]:
+) -> Literal["Why have a fixed response? I dunno"]:
     """
     Args:
         path (Literal['this goes in the path']):
@@ -121,7 +115,6 @@ def sync(
         body (PostConstPathBody):
 
     Raises:
-        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
@@ -153,7 +146,6 @@ async def asyncio_detailed(
         body (PostConstPathBody):
 
     Raises:
-        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
@@ -179,7 +171,7 @@ async def asyncio(
     body: PostConstPathBody,
     required_query: Literal["this always goes in the query"],
     optional_query: Union[Literal["this sometimes goes in the query"], Unset] = UNSET,
-) -> Optional[Literal["Why have a fixed response? I dunno"]]:
+) -> Literal["Why have a fixed response? I dunno"]:
     """
     Args:
         path (Literal['this goes in the path']):
@@ -188,7 +180,6 @@ async def asyncio(
         body (PostConstPathBody):
 
     Raises:
-        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:

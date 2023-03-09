@@ -3,17 +3,11 @@ from typing import Any, Union, Optional
 from attrs import define, field
 import httpx
 
+from .errors import ClientError, InformationalResponse, RedirectionError, ServerError
 from .jwt import AsyncJWTAuth, SyncJWTAuth
 
 
 {% set attrs_info = {
-    "raise_on_unexpected_status": namespace(
-        type="bool",
-        default="field(default=False, kw_only=True)",
-        docstring="Whether or not to raise an errors.UnexpectedStatus if the API returns a status code"
-            " that was not documented in the source OpenAPI document. Can also be provided as a keyword"
-            " argument to the constructor."
-    ),
     "token": namespace(type="str", default="", docstring="The token to use for authentication"),
     "prefix": namespace(type="str", default='"Bearer"', docstring="The prefix to use for the Authorization header"),
     "auth_header_name": namespace(type="str", default='"Authorization"', docstring="The name of the Authorization header"),
@@ -56,14 +50,12 @@ class Client:
 {% if not config.docstrings_on_attributes %}
 
     Attributes:
-        {{ attr_in_class_docstring("raise_on_unexpected_status") | wordwrap(101) | indent(12) }}
         {{ attr_in_class_docstring("key") | wordwrap(101) | indent(12) }}
         {{ attr_in_class_docstring("key_fingerprint") | wordwrap(101) | indent(12) }}
         {{ attr_in_class_docstring("jwt_expiration") | wordwrap(101) | indent(12) }}
 {% endif %}
     """
 {% macro attributes() %}
-    {{ declare_attr("raise_on_unexpected_status") | indent(4) }}
     _base_url: str = field(alias="base_url")
     _headers: dict[str, str] = field(factory=dict, kw_only=True, alias="headers")
     _timeout: float = field(default=30.0, kw_only=True, alias="timeout")
@@ -132,8 +124,32 @@ class Client:
         await self.get_async_httpx_client().__aexit__(*args, **kwargs)
 
     def request(self, *args: Any, **kwargs: Any) -> httpx.Response:
-        return self.get_httpx_client().request(*args, **kwargs)
+        response = self.get_httpx_client().request(*args, **kwargs)
+
+        self._check_response_status(response)
+
+        return response
 
     async def async_request(self, *args: Any, **kwargs: Any) -> httpx.Response:
-        return await self.get_async_httpx_client().request(*args, **kwargs)
+        response = await self.get_async_httpx_client().request(*args, **kwargs)
+
+        self._check_response_status(response)
+
+        return response
+
+    def _check_response_status(self, response: httpx.Response) -> None:
+        if response.is_success:
+            return
+
+        if response.is_informational:
+            raise InformationalResponse(response)
+
+        if response.is_redirect:
+            raise RedirectionError(response)
+
+        if response.is_client_error:
+            raise ClientError(response)
+
+        if response.is_server_error:
+            raise ServerError(response)
 {% endmacro %}{{ httpx_stuff("Client") }}

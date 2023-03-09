@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from typing import Any, Optional
+from typing import Any
 
 import httpx
 
@@ -30,15 +30,12 @@ def _get_kwargs(
     return _kwargs
 
 
-def _parse_response(*, client: Client, response: httpx.Response) -> Optional[TestInlineObjectsResponse200]:
+def _parse_response(*, client: Client, response: httpx.Response) -> TestInlineObjectsResponse200:
     if response.status_code == 200:
         response_200 = TestInlineObjectsResponse200.from_dict(response.json())
 
         return response_200
-    if client.raise_on_unexpected_status:
-        raise errors.UnexpectedStatus(response.status_code, response.content)
-    else:
-        return None
+    raise errors.UnexpectedStatus(response)
 
 
 def _build_response(*, client: Client, response: httpx.Response) -> Response[TestInlineObjectsResponse200]:
@@ -61,7 +58,6 @@ def sync_detailed(
         body (TestInlineObjectsBody):
 
     Raises:
-        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
@@ -83,14 +79,13 @@ def sync(
     *,
     client: Client,
     body: TestInlineObjectsBody,
-) -> Optional[TestInlineObjectsResponse200]:
+) -> TestInlineObjectsResponse200:
     """Test Inline Objects
 
     Args:
         body (TestInlineObjectsBody):
 
     Raises:
-        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
@@ -114,7 +109,6 @@ async def asyncio_detailed(
         body (TestInlineObjectsBody):
 
     Raises:
-        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
@@ -134,14 +128,13 @@ async def asyncio(
     *,
     client: Client,
     body: TestInlineObjectsBody,
-) -> Optional[TestInlineObjectsResponse200]:
+) -> TestInlineObjectsResponse200:
     """Test Inline Objects
 
     Args:
         body (TestInlineObjectsBody):
 
     Raises:
-        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
