@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, Union
 
 import httpx
 
@@ -35,9 +35,7 @@ def _get_kwargs(
     return _kwargs
 
 
-def _parse_response(
-    *, client: Client, response: httpx.Response
-) -> Optional[Union[PostParametersHeaderResponse200, PublicError]]:
+def _parse_response(*, client: Client, response: httpx.Response) -> Union[PostParametersHeaderResponse200, PublicError]:
     if response.status_code == HTTPStatus.OK:
         response_200 = PostParametersHeaderResponse200.from_dict(response.json())
 
@@ -46,10 +44,8 @@ def _parse_response(
         response_400 = PublicError.from_dict(response.json())
 
         return response_400
-    if client.raise_on_unexpected_status:
-        raise errors.UnexpectedStatus(response.status_code, response.content)
     else:
-        return None
+        raise errors.UnexpectedStatus(response)
 
 
 def _build_response(
@@ -79,7 +75,6 @@ def sync_detailed(
         integer_header (int):
 
     Raises:
-        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
@@ -107,7 +102,7 @@ def sync(
     string_header: str,
     number_header: float,
     integer_header: int,
-) -> Optional[Union[PostParametersHeaderResponse200, PublicError]]:
+) -> Union[PostParametersHeaderResponse200, PublicError]:
     """
     Args:
         boolean_header (bool):
@@ -116,7 +111,6 @@ def sync(
         integer_header (int):
 
     Raises:
-        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
@@ -148,7 +142,6 @@ async def asyncio_detailed(
         integer_header (int):
 
     Raises:
-        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
@@ -174,7 +167,7 @@ async def asyncio(
     string_header: str,
     number_header: float,
     integer_header: int,
-) -> Optional[Union[PostParametersHeaderResponse200, PublicError]]:
+) -> Union[PostParametersHeaderResponse200, PublicError]:
     """
     Args:
         boolean_header (bool):
@@ -183,7 +176,6 @@ async def asyncio(
         integer_header (int):
 
     Raises:
-        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:

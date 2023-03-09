@@ -3,6 +3,7 @@ from typing import Any, Dict, Optional
 import httpx
 from attrs import define, field
 
+from .errors import ClientError, InformationalResponse, RedirectionError, ServerError
 from .jwt import AsyncJWTAuth, SyncJWTAuth
 
 
@@ -25,15 +26,13 @@ class Client:
 
 
     Attributes:
-        raise_on_unexpected_status: Whether or not to raise an errors.UnexpectedStatus if the API returns a
-            status code that was not documented in the source OpenAPI document. Can also be provided as a keyword
-            argument to the constructor.
+        raise_for_status: Raise an exception for any responses which are not a 2xx success code.
         key: The private key used to sign the JWT encoded with ES256.
         key_fingerprint: Key ID or fingerprint.
         jwt_expiration: Controls the expiration time for a JWT. 60 seconds by default.
     """
 
-    raise_on_unexpected_status: bool = field(default=False, kw_only=True)
+    raise_for_status: bool = field(default=True, kw_only=True)
     _base_url: str = field(alias="base_url")
     _headers: Dict[str, str] = field(factory=dict, kw_only=True, alias="headers")
     _timeout: float = field(default=30.0, kw_only=True, alias="timeout")
@@ -94,7 +93,33 @@ class Client:
         await self.get_async_httpx_client().__aexit__(*args, **kwargs)
 
     def request(self, *args: Any, **kwargs: Any) -> httpx.Response:
-        return self.get_httpx_client().request(*args, **kwargs)
+        response = self.get_httpx_client().request(*args, **kwargs)
+
+        if self.raise_for_status:
+            self._check_response_status(response)
+
+        return response
 
     async def async_request(self, *args: Any, **kwargs: Any) -> httpx.Response:
-        return await self.get_async_httpx_client().request(*args, **kwargs)
+        response = await self.get_async_httpx_client().request(*args, **kwargs)
+
+        if self.raise_for_status:
+            self._check_response_status(response)
+
+        return response
+
+    def _check_response_status(self, response: httpx.Response) -> None:
+        if response.is_success:
+            return
+
+        if response.is_informational:
+            raise InformationalResponse(response)
+
+        if response.is_redirect:
+            raise RedirectionError(response)
+
+        if response.is_client_error:
+            raise ClientError(response)
+
+        if response.is_server_error:
+            raise ServerError(response)

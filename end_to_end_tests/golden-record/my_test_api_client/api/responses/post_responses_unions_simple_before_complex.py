@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 import httpx
 
@@ -20,17 +20,13 @@ def _get_kwargs() -> Dict[str, Any]:
     return _kwargs
 
 
-def _parse_response(
-    *, client: Client, response: httpx.Response
-) -> Optional[PostResponsesUnionsSimpleBeforeComplexResponse200]:
+def _parse_response(*, client: Client, response: httpx.Response) -> PostResponsesUnionsSimpleBeforeComplexResponse200:
     if response.status_code == HTTPStatus.OK:
         response_200 = PostResponsesUnionsSimpleBeforeComplexResponse200.from_dict(response.json())
 
         return response_200
-    if client.raise_on_unexpected_status:
-        raise errors.UnexpectedStatus(response.status_code, response.content)
     else:
-        return None
+        raise errors.UnexpectedStatus(response)
 
 
 def _build_response(
@@ -51,7 +47,6 @@ def sync_detailed(
     """Regression test for #603
 
     Raises:
-        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
@@ -70,11 +65,10 @@ def sync_detailed(
 def sync(
     *,
     client: Client,
-) -> Optional[PostResponsesUnionsSimpleBeforeComplexResponse200]:
+) -> PostResponsesUnionsSimpleBeforeComplexResponse200:
     """Regression test for #603
 
     Raises:
-        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
@@ -93,7 +87,6 @@ async def asyncio_detailed(
     """Regression test for #603
 
     Raises:
-        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
@@ -110,11 +103,10 @@ async def asyncio_detailed(
 async def asyncio(
     *,
     client: Client,
-) -> Optional[PostResponsesUnionsSimpleBeforeComplexResponse200]:
+) -> PostResponsesUnionsSimpleBeforeComplexResponse200:
     """Regression test for #603
 
     Raises:
-        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:

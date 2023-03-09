@@ -1,16 +1,52 @@
 """Contains shared errors types that can be raised from API functions"""
 
+from typing import Any
 
-class UnexpectedStatus(Exception):
-    """Raised by api functions when the response status an undocumented status and Client.raise_on_unexpected_status is True"""
+import httpx
 
-    def __init__(self, status_code: int, content: bytes):
-        self.status_code = status_code
-        self.content = content
+
+class BaseError(Exception):
+    pass
+
+
+class PaginationError(BaseError):
+    """Raised by api functions when the response status is not 200."""
+
+    def __init__(self, model: Any, response: Any) -> None:
+        self.response = response
+
+        super().__init__(f"Pagination error: expected {model}, got {type(response)}")
+
+
+class HTTPError(BaseError):
+    def __init__(self, response: httpx.Response):
+        self.response = response
 
         super().__init__(
-            f"Unexpected status code: {status_code}\n\nResponse content:\n{content.decode(errors='ignore')}"
+            f"HTTP error: {self.response.status_code} {self.response.reason_phrase}\n"
+            f"Response headers: {dict(self.response.headers)}\n"
+            f"Response body: {self.response.text}"
         )
 
 
-__all__ = ["UnexpectedStatus"]
+class UnexpectedStatus(HTTPError):
+    """Raised by api functions when the response status an undocumented status."""
+
+
+class InformationalResponse(HTTPError):
+    """Raised when the response status is 1xx."""
+
+
+class RedirectionError(HTTPError):
+    """Raised when the response status is 3xx."""
+
+
+class ClientError(HTTPError):
+    """Raised when the response status is 4xx."""
+
+
+class ServerError(HTTPError):
+    """Raised when the response status is 5xx."""
+
+
+__all__ = ["UnexpectedStatus", "PaginationError"]
