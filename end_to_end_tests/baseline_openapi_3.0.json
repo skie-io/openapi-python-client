@@ -1415,7 +1415,9 @@
     },
     "/naming/mixed-case": {
       "get": {
-        "tags": ["naming"],
+        "tags": [
+          "naming"
+        ],
         "operationId": "mixed_case",
         "parameters": [
           {
@@ -1436,30 +1438,32 @@
           }
         ],
         "responses": {
-            "200": {
-              "description": "Successful response",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "mixed_case": {
-                        "type": "string"
-                      },
-                      "mixedCase": {
-                        "type": "string"
-                      }
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "mixed_case": {
+                      "type": "string"
+                    },
+                    "mixedCase": {
+                      "type": "string"
                     }
                   }
                 }
               }
             }
+          }
         }
       }
     },
     "/naming/{hyphen-in-path}": {
       "get": {
-        "tags": ["naming"],
+        "tags": [
+          "naming"
+        ],
         "operationId": "hyphen_in_path",
         "parameters": [
           {
