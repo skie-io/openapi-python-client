@@ -402,8 +402,7 @@
                   "some_nullable_object",
                   "some_required_number"
                 ],
-                "properties": {
-                }
+                "properties": {}
               }
             }
           },
@@ -1172,7 +1171,10 @@
     },
     "/tag_with_number": {
       "get": {
-        "tags": ["1", "2"],
+        "tags": [
+          "1",
+          "2"
+        ],
         "responses": {
           "200": {
             "description": "Success"
@@ -1707,7 +1709,9 @@
                           "type": "string"
                         }
                       },
-                      "required": ["type"]
+                      "required": [
+                        "type"
+                      ]
                     },
                     {
                       "type": "object",
@@ -1719,7 +1723,9 @@
                           "type": "string"
                         }
                       },
-                      "required": ["type"]
+                      "required": [
+                        "type"
+                      ]
                     }
                   ]
                 }
