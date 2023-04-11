@@ -73,7 +73,7 @@ def sync_detailed(
         multipart_data=multipart_data,
     )
 
-    response = client.get_httpx_client().request(
+    response = client.request(
         **kwargs,
     )
 
@@ -130,7 +130,7 @@ async def asyncio_detailed(
         multipart_data=multipart_data,
     )
 
-    response = await client.get_async_httpx_client().request(**kwargs)
+    response = await client.async_request(**kwargs)
 
     return _build_response(client=client, response=response)
 
