@@ -17,6 +17,8 @@ class Client:
         ``timeout``: The maximum amount of a time a request can take. API functions will raise
         httpx.TimeoutException if this is exceeded.
 
+        ``pool_size``: The maximum number of connections to keep in a connection pool.
+
         ``httpx_args``: A dictionary of additional arguments to be passed to the ``httpx.Client`` and ``httpx.AsyncClient`` constructor.
 
 
@@ -29,7 +31,8 @@ class Client:
     raise_on_unexpected_status: bool = field(default=False, kw_only=True)
     _base_url: str = field(alias="base_url")
     _headers: Dict[str, str] = field(factory=dict, kw_only=True, alias="headers")
-    _timeout: Optional[httpx.Timeout] = field(default=None, kw_only=True, alias="timeout")
+    _timeout: float = field(default=30.0, kw_only=True, alias="timeout")
+    _pool_size: int = field(default=10, kw_only=True, alias="pool_size")
     _httpx_args: Dict[str, Any] = field(factory=dict, kw_only=True, alias="httpx_args")
     _client: Optional[httpx.Client] = field(default=None, init=False)
     _async_client: Optional[httpx.AsyncClient] = field(default=None, init=False)
@@ -40,7 +43,8 @@ class Client:
             self._client = httpx.Client(
                 base_url=self._base_url,
                 headers=self._headers,
-                timeout=self._timeout,
+                timeout=httpx.Timeout(self._timeout, pool=None),
+                limits=httpx.Limits(max_connections=self._pool_size, max_keepalive_connections=self._pool_size),
                 **self._httpx_args,
             )
         return self._client
@@ -60,7 +64,8 @@ class Client:
             self._async_client = httpx.AsyncClient(
                 base_url=self._base_url,
                 headers=self._headers,
-                timeout=self._timeout,
+                timeout=httpx.Timeout(self._timeout, pool=None),
+                limits=httpx.Limits(max_connections=self._pool_size, max_keepalive_connections=self._pool_size),
                 **self._httpx_args,
             )
         return self._async_client
@@ -73,3 +78,9 @@ class Client:
     async def __aexit__(self, *args: Any, **kwargs: Any) -> None:
         """Exit a context manager for underlying httpx.AsyncClient (see httpx docs)"""
         await self.get_async_httpx_client().__aexit__(*args, **kwargs)
+
+    def request(self, *args: Any, **kwargs: Any) -> httpx.Response:
+        return self.get_httpx_client().request(*args, **kwargs)
+
+    async def async_request(self, *args: Any, **kwargs: Any) -> httpx.Response:
+        return await self.get_async_httpx_client().request(*args, **kwargs)
