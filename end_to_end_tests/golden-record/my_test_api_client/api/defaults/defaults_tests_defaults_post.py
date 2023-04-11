@@ -3,6 +3,7 @@ from http import HTTPStatus
 from typing import Any, Union
 
 import httpx
+import orjson
 from dateutil.parser import isoparse
 
 from ... import errors
@@ -88,10 +89,10 @@ def _get_kwargs(
 
 def _parse_response(*, client: Client, response: httpx.Response) -> Union[Any, HTTPValidationError]:
     if response.status_code == 200:
-        response_200 = response.json()
+        response_200 = orjson.loads(response.content)
         return response_200
     if response.status_code == 422:
-        response_422 = HTTPValidationError.from_dict(response.json())
+        response_422 = HTTPValidationError.from_dict(orjson.loads(response.content))
 
         return response_422
     raise errors.UnexpectedStatus(response)

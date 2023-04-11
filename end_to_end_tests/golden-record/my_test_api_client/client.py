@@ -4,6 +4,7 @@ import httpx
 from attrs import define, field
 
 from .errors import ClientError, InformationalResponse, RedirectionError, ServerError
+from .json import encode_json
 from .jwt import AsyncJWTAuth, SyncJWTAuth
 
 
@@ -90,15 +91,45 @@ class Client:
         """Exit a context manager for underlying httpx.AsyncClient (see httpx docs)"""
         await self.get_async_httpx_client().__aexit__(*args, **kwargs)
 
-    def request(self, *args: Any, **kwargs: Any) -> httpx.Response:
-        response = self.get_httpx_client().request(*args, **kwargs)
+    def request(
+        self,
+        *,
+        method: str,
+        url: str,
+        data: Optional[dict[str, Any]] = None,
+        files: Optional[dict[str, Any]] = None,
+        json: Optional[Any] = None,
+        params: Optional[dict[str, Any]] = None,
+        headers: Optional[dict[str, str]] = None,
+    ) -> httpx.Response:
+        if json is not None:
+            json = encode_json(json)
+
+        response = self.get_httpx_client().request(
+            method=method, url=url, data=data, files=files, content=json, params=params, headers=headers
+        )
 
         self._check_response_status(response)
 
         return response
 
-    async def async_request(self, *args: Any, **kwargs: Any) -> httpx.Response:
-        response = await self.get_async_httpx_client().request(*args, **kwargs)
+    async def async_request(
+        self,
+        *,
+        method: str,
+        url: str,
+        data: Optional[dict[str, Any]] = None,
+        files: Optional[dict[str, Any]] = None,
+        json: Optional[Any] = None,
+        params: Optional[dict[str, Any]] = None,
+        headers: Optional[dict[str, str]] = None,
+    ) -> httpx.Response:
+        if json is not None:
+            json = encode_json(json)
+
+        response = await self.get_async_httpx_client().request(
+            method=method, url=url, data=data, files=files, content=json, params=params, headers=headers
+        )
 
         self._check_response_status(response)
 

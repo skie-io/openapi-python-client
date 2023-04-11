@@ -2,6 +2,7 @@ from http import HTTPStatus
 from typing import Any, Union
 
 import httpx
+import orjson
 
 from ... import errors
 from ...client import Client
@@ -31,7 +32,7 @@ def _get_kwargs(
 
 def _parse_response(*, client: Client, response: httpx.Response) -> PaginatedResult:
     if response.status_code == 200:
-        response_200 = PaginatedResult.from_dict(response.json())
+        response_200 = PaginatedResult.from_dict(orjson.loads(response.content))
 
         return response_200
     raise errors.UnexpectedStatus(response)

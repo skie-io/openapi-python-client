@@ -2,6 +2,7 @@ from http import HTTPStatus
 from typing import Any, Union
 
 import httpx
+import orjson
 
 from ... import errors
 from ...client import Client
@@ -47,7 +48,7 @@ def _parse_response(
 
             return response_200_type_1
 
-        response_200 = _parse_response_200(response.json())
+        response_200 = _parse_response_200(orjson.loads(response.content))
 
         return response_200
     raise errors.UnexpectedStatus(response)
