@@ -17,25 +17,25 @@ def _get_kwargs(
     not_null_not_required: Union[Unset, None, datetime.datetime] = UNSET,
 ) -> Dict[str, Any]:
     params: Dict[str, Any] = {}
-    json_not_null_required = not_null_required.isoformat()
+    json_not_null_required = not_null_required
 
     params["not_null_required"] = json_not_null_required
 
-    json_null_required: Union[Unset, None, str] = UNSET
+    json_null_required: Union[Unset, None, datetime.datetime] = UNSET
     if not isinstance(null_required, Unset):
-        json_null_required = null_required.isoformat() if null_required else None
+        json_null_required = null_required if null_required else None
 
     params["null_required"] = json_null_required
 
-    json_null_not_required: Union[Unset, None, str] = UNSET
+    json_null_not_required: Union[Unset, None, datetime.datetime] = UNSET
     if not isinstance(null_not_required, Unset):
-        json_null_not_required = null_not_required.isoformat() if null_not_required else None
+        json_null_not_required = null_not_required if null_not_required else None
 
     params["null_not_required"] = json_null_not_required
 
-    json_not_null_not_required: Union[Unset, None, str] = UNSET
+    json_not_null_not_required: Union[Unset, None, datetime.datetime] = UNSET
     if not isinstance(not_null_not_required, Unset):
-        json_not_null_not_required = not_null_not_required.isoformat() if not_null_not_required else None
+        json_not_null_not_required = not_null_not_required if not_null_not_required else None
 
     params["not_null_not_required"] = json_not_null_not_required
 

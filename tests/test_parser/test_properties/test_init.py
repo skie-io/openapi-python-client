@@ -249,14 +249,14 @@ class TestUnionProperty:
             (True, False, True, False, "Union[datetime.datetime, str]"),
             (True, True, False, False, "Union[None, datetime.datetime, str]"),
             (True, True, True, False, "Union[datetime.datetime, str]"),
-            (False, False, False, True, "Union[Unset, str]"),
-            (False, False, True, True, "str"),
-            (False, True, False, True, "str"),
-            (False, True, True, True, "str"),
-            (True, False, False, True, "Union[None, Unset, str]"),
-            (True, False, True, True, "str"),
-            (True, True, False, True, "Union[None, str]"),
-            (True, True, True, True, "str"),
+            (False, False, False, True, "Union[Unset, datetime.datetime, str]"),
+            (False, False, True, True, "Union[datetime.datetime, str]"),
+            (False, True, False, True, "Union[datetime.datetime, str]"),
+            (False, True, True, True, "Union[datetime.datetime, str]"),
+            (True, False, False, True, "Union[None, Unset, datetime.datetime, str]"),
+            (True, False, True, True, "Union[datetime.datetime, str]"),
+            (True, True, False, True, "Union[None, datetime.datetime, str]"),
+            (True, True, True, True, "Union[datetime.datetime, str]"),
         ],
     )
     def test_get_type_string(
@@ -313,7 +313,7 @@ class TestUnionProperty:
             inner_properties=[date_time_property_factory()],
         )
 
-        assert p.get_base_json_type_string() == "str"
+        assert p.get_base_json_type_string() == "datetime.datetime"
 
     @pytest.mark.parametrize("required", (True, False))
     @pytest.mark.parametrize("nullable", (True, False))

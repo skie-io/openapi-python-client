@@ -68,13 +68,13 @@ class BodyUploadFileTestsUploadPost:
             some_optional_file = self.some_optional_file.to_tuple()
 
         some_string = self.some_string
-        a_datetime: Union[Unset, str] = UNSET
+        a_datetime: Union[Unset, datetime.datetime] = UNSET
         if not isinstance(self.a_datetime, Unset):
-            a_datetime = self.a_datetime.isoformat()
+            a_datetime = self.a_datetime
 
-        a_date: Union[Unset, str] = UNSET
+        a_date: Union[Unset, datetime.date] = UNSET
         if not isinstance(self.a_date, Unset):
-            a_date = self.a_date.isoformat()
+            a_date = self.a_date
 
         some_number = self.some_number
         some_array: Union[Unset, List[float]] = UNSET

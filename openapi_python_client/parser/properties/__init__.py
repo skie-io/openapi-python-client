@@ -73,7 +73,7 @@ class DateTimeProperty(Property):
     """
 
     _type_string: ClassVar[str] = "datetime.datetime"
-    _json_type_string: ClassVar[str] = "str"
+    _json_type_string: ClassVar[str] = "datetime.datetime"
     template: ClassVar[str] = "datetime_property.py.jinja"
 
     def get_imports(self, *, prefix: str) -> Set[str]:
@@ -94,7 +94,7 @@ class DateProperty(Property):
     """A property of type datetime.date"""
 
     _type_string: ClassVar[str] = "datetime.date"
-    _json_type_string: ClassVar[str] = "str"
+    _json_type_string: ClassVar[str] = "datetime.date"
     template: ClassVar[str] = "date_property.py.jinja"
 
     def get_imports(self, *, prefix: str) -> Set[str]:

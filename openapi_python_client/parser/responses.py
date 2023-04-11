@@ -27,14 +27,14 @@ def _source_by_content_type(content_type: str) -> Optional[str]:
     content_type = utils.get_content_type(content_type)
 
     known_content_types = {
-        "application/json": "response.json()",
+        "application/json": "orjson.loads(response.content)",
         "application/octet-stream": "response.content",
         "text/html": "response.text",
     }
     source = known_content_types.get(content_type)
     if source is None and content_type.endswith("+json"):
         # Implements https://www.rfc-editor.org/rfc/rfc6838#section-4.2.8 for the +json suffix
-        source = "response.json()"
+        source = "orjson.loads(response.content)"
     return source
 
 

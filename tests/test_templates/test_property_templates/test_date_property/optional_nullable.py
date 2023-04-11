@@ -3,9 +3,9 @@ from typing import cast, Union
 
 from dateutil.parser import isoparse
 some_source = date(2020, 10, 12)
-some_destination: Union[Unset, None, str] = UNSET
+some_destination: Union[Unset, None, datetime.date] = UNSET
 if not isinstance(some_source, Unset):
-    some_destination = some_source.isoformat() if some_source else None
+    some_destination = some_source if some_source else None
 
 _a_prop = some_destination
 a_prop: Union[Unset, None, datetime.date]

@@ -2,6 +2,7 @@ from http import HTTPStatus
 from typing import Any, Dict, Union
 
 import httpx
+import orjson
 
 from ... import errors
 from ...client import Client
@@ -26,11 +27,11 @@ def _get_kwargs(
 
 def _parse_response(*, client: Client, response: httpx.Response) -> Union[PostBodyMultipartResponse200, PublicError]:
     if response.status_code == HTTPStatus.OK:
-        response_200 = PostBodyMultipartResponse200.from_dict(response.json())
+        response_200 = PostBodyMultipartResponse200.from_dict(orjson.loads(response.content))
 
         return response_200
     if response.status_code == HTTPStatus.BAD_REQUEST:
-        response_400 = PublicError.from_dict(response.json())
+        response_400 = PublicError.from_dict(orjson.loads(response.content))
 
         return response_400
     else:

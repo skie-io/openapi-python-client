@@ -2,6 +2,7 @@ from http import HTTPStatus
 from typing import Any, Dict, List, Union
 
 import httpx
+import orjson
 
 from ... import errors
 from ...client import Client
@@ -29,11 +30,11 @@ def _get_kwargs(
 
 def _parse_response(*, client: Client, response: httpx.Response) -> Union[PaginatedResult, PaginatedResultError]:
     if response.status_code == HTTPStatus.OK:
-        response_200 = PaginatedResult.from_dict(response.json())
+        response_200 = PaginatedResult.from_dict(orjson.loads(response.content))
 
         return response_200
     if response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY:
-        response_422 = PaginatedResultError.from_dict(response.json())
+        response_422 = PaginatedResultError.from_dict(orjson.loads(response.content))
 
         return response_422
     else:

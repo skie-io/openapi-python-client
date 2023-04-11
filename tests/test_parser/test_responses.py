@@ -124,7 +124,7 @@ def test_response_from_data_property(mocker, property_factory):
     assert response == responses.Response(
         status_code=400,
         prop=prop,
-        source="response.json()",
+        source="orjson.loads(response.content)",
     )
     property_from_data.assert_called_once_with(
         name="response_400", required=True, data="something", schemas=Schemas(), parent_name="parent", config=config
