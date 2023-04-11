@@ -79,7 +79,7 @@ def sync_detailed(
         body=body,
     )
 
-    response = client.get_httpx_client().request(
+    response = client.request(
         **kwargs,
     )
 
@@ -136,7 +136,7 @@ async def asyncio_detailed(
         body=body,
     )
 
-    response = await client.get_async_httpx_client().request(**kwargs)
+    response = await client.async_request(**kwargs)
 
     return _build_response(client=client, response=response)
 
