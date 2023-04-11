@@ -3,6 +3,7 @@ from http import HTTPStatus
 from typing import Any, Dict, List, Union
 
 import httpx
+import orjson
 
 from ... import errors
 from ...client import Client
@@ -44,11 +45,11 @@ def _get_kwargs(
 
     params["an_enum_value_with_only_null"] = json_an_enum_value_with_only_null
 
-    json_some_date: str
+    json_some_date: Union[datetime.date, datetime.datetime]
     if isinstance(some_date, datetime.date):
-        json_some_date = some_date.isoformat()
+        json_some_date = some_date
     else:
-        json_some_date = some_date.isoformat()
+        json_some_date = some_date
 
     params["some_date"] = json_some_date
 
@@ -66,7 +67,7 @@ def _get_kwargs(
 def _parse_response(*, client: Client, response: httpx.Response) -> Union[HTTPValidationError, List["AModel"]]:
     if response.status_code == HTTPStatus.OK:
         response_200 = []
-        _response_200 = response.json()
+        _response_200 = orjson.loads(response.content)
         for response_200_item_data in _response_200:
             response_200_item = AModel.from_dict(response_200_item_data)
 
@@ -74,11 +75,11 @@ def _parse_response(*, client: Client, response: httpx.Response) -> Union[HTTPVa
 
         return response_200
     if response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY:
-        response_422 = HTTPValidationError.from_dict(response.json())
+        response_422 = HTTPValidationError.from_dict(orjson.loads(response.content))
 
         return response_422
     if response.status_code == HTTPStatus.LOCKED:
-        response_423 = HTTPValidationError.from_dict(response.json())
+        response_423 = HTTPValidationError.from_dict(orjson.loads(response.content))
 
         return response_423
     else:

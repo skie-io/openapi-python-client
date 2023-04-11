@@ -22,7 +22,7 @@ class DateProperty(PropertyProtocol):
     example: str | None
 
     _type_string: ClassVar[str] = "datetime.date"
-    _json_type_string: ClassVar[str] = "str"
+    _json_type_string: ClassVar[str] = "datetime.date"
     template: ClassVar[str] = "date_property.py.jinja"
 
     @classmethod

@@ -21,9 +21,9 @@ class ModelWithDateTimeProperty:
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
-        datetime_: Union[Unset, str] = UNSET
+        datetime_: Union[Unset, datetime.datetime] = UNSET
         if not isinstance(self.datetime_, Unset):
-            datetime_ = self.datetime_.isoformat()
+            datetime_ = self.datetime_
 
         field_dict: Dict[str, Any] = {}
         field_dict.update(self.additional_properties)

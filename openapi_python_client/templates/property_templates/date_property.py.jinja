@@ -11,16 +11,16 @@ isoparse({{ source }}).date()
 {% macro check_type_for_construct(property, source) %}isinstance({{ source }}, str){% endmacro %}
 
 {% macro transform(property, source, destination, declare_type=True, multipart=False) %}
-{% set transformed = source + ".isoformat()" %}
+{% set transformed = source %}
 {% if multipart %}{# Multipart data must be bytes, not str #}
-{% set transformed = transformed + ".encode()" %}
+{% set transformed = transformed + ".isoformat().encode()" %}
 {% endif %}
 {% if property.required %}
 {{ destination }} = {{ transformed }}
 {%- else %}
 {% if declare_type %}
 {% set type_annotation = property.get_type_string(json=True) %}
-{% if multipart %}{% set type_annotation = type_annotation | replace("str", "bytes") %}{% endif %}
+{% if multipart %}{% set type_annotation = type_annotation | replace("datetime.date", "bytes") %}{% endif %}
 {{ destination }}: {{ type_annotation }} = UNSET
 {% else %}
 {{ destination }} = UNSET

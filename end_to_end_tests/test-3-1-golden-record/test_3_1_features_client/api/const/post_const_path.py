@@ -2,6 +2,7 @@ from http import HTTPStatus
 from typing import Any, Dict, Literal, Union, cast
 
 import httpx
+import orjson
 
 from ... import errors
 from ...client import Client
@@ -43,7 +44,7 @@ def _get_kwargs(
 
 def _parse_response(*, client: Client, response: httpx.Response) -> Literal["Why have a fixed response? I dunno"]:
     if response.status_code == HTTPStatus.OK:
-        response_200 = cast(Literal["Why have a fixed response? I dunno"], response.json())
+        response_200 = cast(Literal["Why have a fixed response? I dunno"], orjson.loads(response.content))
         if response_200 != "Why have a fixed response? I dunno":
             raise ValueError(
                 f"response_200 must match const 'Why have a fixed response? I dunno', got '{response_200}'"

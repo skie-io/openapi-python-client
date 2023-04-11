@@ -2,6 +2,7 @@ from http import HTTPStatus
 from typing import Any, Dict, Union
 
 import httpx
+import orjson
 
 from ... import errors
 from ...client import Client
@@ -32,10 +33,10 @@ def _get_kwargs(
 
 def _parse_response(*, client: Client, response: httpx.Response) -> Union[Any, HTTPValidationError]:
     if response.status_code == HTTPStatus.OK:
-        response_200 = response.json()
+        response_200 = orjson.loads(response.content)
         return response_200
     if response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY:
-        response_422 = HTTPValidationError.from_dict(response.json())
+        response_422 = HTTPValidationError.from_dict(orjson.loads(response.content))
 
         return response_422
     else:

@@ -231,10 +231,10 @@ class TestUnionProperty:
             (False, True, False, "Union[datetime.datetime, str]"),
             (True, False, False, "Union[datetime.datetime, str]"),
             (True, True, False, "Union[datetime.datetime, str]"),
-            (False, False, True, "Union[Unset, str]"),
-            (False, True, True, "str"),
-            (True, False, True, "str"),
-            (True, True, True, "str"),
+            (False, False, True, "Union[Unset, datetime.datetime, str]"),
+            (False, True, True, "Union[datetime.datetime, str]"),
+            (True, False, True, "Union[datetime.datetime, str]"),
+            (True, True, True, "Union[datetime.datetime, str]"),
         ],
     )
     def test_get_type_string(
@@ -289,7 +289,7 @@ class TestUnionProperty:
             inner_properties=[date_time_property_factory()],
         )
 
-        assert p.get_base_json_type_string() == "str"
+        assert p.get_base_json_type_string() == "datetime.datetime"
 
     @pytest.mark.parametrize("required", (True, False))
     def test_get_type_imports(self, union_property_factory, date_time_property_factory, required):

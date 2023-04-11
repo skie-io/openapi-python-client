@@ -253,6 +253,11 @@ class Project:
         jwt_template = self.env.get_template("jwt.py.jinja")
         jwt_path.write_text(jwt_template.render(), encoding=self.config.file_encoding)
 
+        # Generate json
+        json_path = self.package_dir / "json.py"
+        json_template = self.env.get_template("json.py.jinja")
+        json_path.write_text(json_template.render(), encoding=self.config.file_encoding)
+
         # Generate included Errors
         errors_path = self.package_dir / "errors.py"
         errors_template = self.env.get_template("errors.py.jinja")

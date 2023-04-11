@@ -79,17 +79,17 @@ class AModel:
 
         an_allof_enum_with_overridden_default = self.an_allof_enum_with_overridden_default.value
 
-        a_camel_date_time: str
+        a_camel_date_time: Union[datetime.date, datetime.datetime]
         if isinstance(self.a_camel_date_time, datetime.datetime):
-            a_camel_date_time = self.a_camel_date_time.isoformat()
+            a_camel_date_time = self.a_camel_date_time
         else:
-            a_camel_date_time = self.a_camel_date_time.isoformat()
+            a_camel_date_time = self.a_camel_date_time
 
-        a_date = self.a_date.isoformat()
+        a_date = self.a_date
 
-        a_nullable_date: Union[None, str]
+        a_nullable_date: Union[None, datetime.date]
         if isinstance(self.a_nullable_date, datetime.date):
-            a_nullable_date = self.a_nullable_date.isoformat()
+            a_nullable_date = self.a_nullable_date
         else:
             a_nullable_date = self.a_nullable_date
 
@@ -139,9 +139,9 @@ class AModel:
 
                 nested_list_of_enums.append(nested_list_of_enums_item)
 
-        a_not_required_date: Union[Unset, str] = UNSET
+        a_not_required_date: Union[Unset, datetime.date] = UNSET
         if not isinstance(self.a_not_required_date, Unset):
-            a_not_required_date = self.a_not_required_date.isoformat()
+            a_not_required_date = self.a_not_required_date
 
         attr_1_leading_digit = self.attr_1_leading_digit
 
