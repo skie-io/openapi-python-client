@@ -21,7 +21,7 @@ class _ResponseSource(TypedDict):
     return_type: str
 
 
-JSON_SOURCE = _ResponseSource(attribute="response.json()", return_type="Any")
+JSON_SOURCE = _ResponseSource(attribute="orjson.loads(response.content)", return_type="Any")
 BYTES_SOURCE = _ResponseSource(attribute="response.content", return_type="bytes")
 TEXT_SOURCE = _ResponseSource(attribute="response.text", return_type="str")
 NONE_SOURCE = _ResponseSource(attribute="None", return_type="None")

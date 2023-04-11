@@ -37,9 +37,9 @@ class ModelWithMergedProperties:
         if not isinstance(self.string_to_enum, Unset):
             string_to_enum = self.string_to_enum.value
 
-        string_to_date: Union[Unset, str] = UNSET
+        string_to_date: Union[Unset, datetime.date] = UNSET
         if not isinstance(self.string_to_date, Unset):
-            string_to_date = self.string_to_date.isoformat()
+            string_to_date = self.string_to_date
 
         number_to_int = self.number_to_int
 

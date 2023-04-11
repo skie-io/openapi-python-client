@@ -2,6 +2,7 @@ from http import HTTPStatus
 from typing import Any, cast
 
 import httpx
+import orjson
 
 from ... import errors
 from ...client import Client
@@ -19,7 +20,7 @@ def _get_kwargs() -> dict[str, Any]:
 
 def _parse_response(*, client: Client, response: httpx.Response) -> list[str]:
     if response.status_code == 200:
-        response_200 = cast(list[str], response.json())
+        response_200 = cast(list[str], orjson.loads(response.content))
 
         return response_200
     raise errors.UnexpectedStatus(response)
