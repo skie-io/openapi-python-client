@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any, ClassVar
 
 from attr import define
-from dateutil.parser import isoparse
+import datetime
 
 from ...utils import PythonIdentifier
 from ..errors import PropertyError
@@ -54,10 +54,10 @@ class DateProperty(PropertyProtocol):
             return value
         if isinstance(value, str):
             try:
-                isoparse(value).date()  # make sure it's a valid value
+                datetime.date.fromisoformat(value)  # make sure it's a valid value
             except ValueError as e:
                 return PropertyError(f"Invalid date: {e}")
-            return Value(f"isoparse({value!r}).date()")
+            return Value(f"datetime.date.fromisoformat({value!r})")
         return PropertyError(f"Cannot convert {value} to a date")
 
     def get_imports(self, *, prefix: str) -> set[str]:
@@ -69,5 +69,5 @@ class DateProperty(PropertyProtocol):
             back to the root of the generated client.
         """
         imports = super().get_imports(prefix=prefix)
-        imports.update({"import datetime", "from typing import cast", "from dateutil.parser import isoparse"})
+        imports.update({"import datetime", f"from {prefix}datetime import str_to_date", "from typing import cast"})
         return imports

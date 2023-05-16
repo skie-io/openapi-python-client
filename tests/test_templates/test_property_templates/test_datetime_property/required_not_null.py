@@ -1,9 +1,8 @@
 from datetime import date
 from typing import cast, Union
 
-from dateutil.parser import isoparse
 some_source = date(2020, 10, 12)
 some_destination = some_source
-a_prop = isoparse(some_destination)
+a_prop = str_to_datetime(some_destination)
 
 

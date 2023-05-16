@@ -156,9 +156,9 @@ class TestBuild:
             optional_properties=[date_time_property_factory(name="opt", required=False)],
             description=data.description,
             relative_imports={
-                "from dateutil.parser import isoparse",
                 "from typing import cast",
                 "import datetime",
+                "from ..datetime import str_to_datetime",
                 "from ..types import UNSET, Unset",
                 "from typing import Union",
             },

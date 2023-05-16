@@ -3,8 +3,8 @@ from typing import Any, Dict, List, Type, TypeVar, Union
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-from dateutil.parser import isoparse
 
+from ..datetime import str_to_datetime
 from ..types import UNSET, Unset
 
 T = TypeVar("T", bound="ModelWithDateTimeProperty")
@@ -41,7 +41,7 @@ class ModelWithDateTimeProperty:
         if isinstance(_datetime_, Unset):
             datetime_ = UNSET
         else:
-            datetime_ = isoparse(_datetime_)
+            datetime_ = str_to_datetime(_datetime_)
 
         model_with_date_time_property = cls(
             datetime_=datetime_,

@@ -45,8 +45,8 @@ class TestDateTimeProperty:
 
         expected = {
             "import datetime",
+            "from ...datetime import str_to_datetime",
             "from typing import cast",
-            "from dateutil.parser import isoparse",
         }
         if not required:
             expected |= {
@@ -67,8 +67,8 @@ class TestDateProperty:
 
         expected = {
             "import datetime",
+            "from ...datetime import str_to_date",
             "from typing import cast",
-            "from dateutil.parser import isoparse",
         }
         if not required:
             expected |= {
@@ -198,8 +198,8 @@ class TestListProperty:
         p = list_property_factory(inner_property=inner_property, required=required)
         expected = {
             "import datetime",
+            "from ...datetime import str_to_datetime",
             "from typing import cast",
-            "from dateutil.parser import isoparse",
             "from typing import cast, List",
         }
         if not required:
@@ -299,8 +299,8 @@ class TestUnionProperty:
         )
         expected = {
             "import datetime",
+            "from ...datetime import str_to_datetime",
             "from typing import cast",
-            "from dateutil.parser import isoparse",
             "from typing import cast, Union",
         }
         if not required:
@@ -767,7 +767,7 @@ class TestStringBasedProperty:
             name=name, required=required, data=data, schemas=Schemas(), config=config, parent_name=""
         )
 
-        assert p == date_time_property_factory(name=name, required=required, default=f"isoparse('{data.default}')")
+        assert p == date_time_property_factory(name=name, required=required, default=f"datetime.datetime.fromisoformat('{data.default}')")
 
     def test_datetime_bad_default(self, config):
         from openapi_python_client.parser.properties import property_from_data
@@ -795,7 +795,7 @@ class TestStringBasedProperty:
             name=name, required=required, data=data, schemas=Schemas(), config=config, parent_name=""
         )
 
-        assert p == date_property_factory(name=name, required=required, default=f"isoparse('{data.default}').date()")
+        assert p == date_property_factory(name=name, required=required, default=f"datetime.date.fromisoformat('{data.default}')")
 
     def test_date_format_bad_default(self, config):
         from openapi_python_client.parser.properties import property_from_data
