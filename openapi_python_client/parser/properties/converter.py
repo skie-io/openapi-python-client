@@ -1,9 +1,8 @@
 """ Utils for converting default values into valid Python """
 __all__ = ["convert", "convert_chain"]
 
+import datetime
 from typing import Any, Callable, Dict, Iterable, Optional
-
-from dateutil.parser import isoparse
 
 from ... import utils
 from ..errors import ValidationError
@@ -63,13 +62,13 @@ def _convert_string(value: Any) -> Optional[str]:
 
 
 def _convert_datetime(value: str) -> Optional[str]:
-    isoparse(value)  # Make sure it works
-    return f"isoparse({value!r})"
+    datetime.datetime.fromisoformat(value)  # Make sure it works
+    return f"datetime.datetime.fromisoformat({value!r})"
 
 
 def _convert_date(value: str) -> Optional[str]:
-    isoparse(value).date()
-    return f"isoparse({value!r}).date()"
+    datetime.date.fromisoformat(value)
+    return f"datetime.date.fromisoformat({value!r})"
 
 
 _CONVERTERS: Dict[str, Callable[[Any], Optional[Any]]] = {

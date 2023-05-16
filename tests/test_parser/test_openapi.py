@@ -532,9 +532,10 @@ class TestEndpoint:
         )
         assert endpoint.responses == [response_1, response_2]
         assert endpoint.relative_imports == {
-            "from dateutil.parser import isoparse",
             "from typing import cast",
             "import datetime",
+            "from ...datetime import str_to_date",
+            "from ...datetime import str_to_datetime",
             "import_3",
         }
         assert response_schemas == schemas_2

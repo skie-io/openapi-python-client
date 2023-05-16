@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Type, TypeVa
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-from dateutil.parser import isoparse
 
+from ..datetime import str_to_date, str_to_datetime
 from ..models.different_enum import DifferentEnum
 from ..types import UNSET, File, FileJsonType, Unset
 
@@ -229,14 +229,14 @@ class BodyUploadFileTestsUploadPost:
         if isinstance(_a_datetime, Unset):
             a_datetime = UNSET
         else:
-            a_datetime = isoparse(_a_datetime)
+            a_datetime = str_to_datetime(_a_datetime)
 
         _a_date = d.pop("a_date", UNSET)
         a_date: Union[Unset, datetime.date]
         if isinstance(_a_date, Unset):
             a_date = UNSET
         else:
-            a_date = isoparse(_a_date).date()
+            a_date = str_to_date(_a_date)
 
         some_number = d.pop("some_number", UNSET)
 

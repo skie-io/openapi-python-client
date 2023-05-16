@@ -1,7 +1,6 @@
-from datetime import date
+import datetime
 from typing import cast, Union
 
-from dateutil.parser import isoparse
 some_source = date(2020, 10, 12)
 some_destination: Union[Unset, None, datetime.date] = UNSET
 if not isinstance(some_source, Unset):
@@ -14,6 +13,6 @@ if _a_prop is None:
 elif isinstance(_a_prop,  Unset):
     a_prop = UNSET
 else:
-    a_prop = isoparse(_a_prop).date()
+    a_prop = str_to_date(_a_prop)
 
 

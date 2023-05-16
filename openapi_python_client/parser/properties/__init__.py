@@ -85,7 +85,7 @@ class DateTimeProperty(Property):
             back to the root of the generated client.
         """
         imports = super().get_imports(prefix=prefix)
-        imports.update({"import datetime", "from typing import cast", "from dateutil.parser import isoparse"})
+        imports.update({"import datetime", f"from {prefix}datetime import str_to_datetime", "from typing import cast"})
         return imports
 
 
@@ -106,7 +106,7 @@ class DateProperty(Property):
             back to the root of the generated client.
         """
         imports = super().get_imports(prefix=prefix)
-        imports.update({"import datetime", "from typing import cast", "from dateutil.parser import isoparse"})
+        imports.update({"import datetime", f"from {prefix}datetime import str_to_date", "from typing import cast"})
         return imports
 
 

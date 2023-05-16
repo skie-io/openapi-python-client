@@ -269,6 +269,11 @@ class Project:
         json_template = self.env.get_template("json.py.jinja")
         json_path.write_text(json_template.render(), encoding=self.file_encoding)
 
+        # Generate datetime
+        datetime_path = self.package_dir / "datetime.py"
+        datetime_template = self.env.get_template("datetime.py.jinja")
+        datetime_path.write_text(datetime_template.render(), encoding=self.file_encoding)
+
         # Generate included Errors
         errors_path = self.package_dir / "errors.py"
         errors_template = self.env.get_template("errors.py.jinja")

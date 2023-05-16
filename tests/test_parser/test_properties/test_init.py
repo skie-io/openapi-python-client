@@ -42,8 +42,8 @@ class TestDateTimeProperty:
 
         expected = {
             "import datetime",
+            "from ...datetime import str_to_datetime",
             "from typing import cast",
-            "from dateutil.parser import isoparse",
         }
         if nullable:
             expected.add("from typing import Optional")
@@ -67,8 +67,8 @@ class TestDateProperty:
 
         expected = {
             "import datetime",
+            "from ...datetime import str_to_date",
             "from typing import cast",
-            "from dateutil.parser import isoparse",
         }
         if nullable:
             expected.add("from typing import Optional")
@@ -210,8 +210,8 @@ class TestListProperty:
         p = list_property_factory(inner_property=inner_property, required=required, nullable=nullable)
         expected = {
             "import datetime",
+            "from ...datetime import str_to_datetime",
             "from typing import cast",
-            "from dateutil.parser import isoparse",
             "from typing import cast, List",
         }
         if nullable:
@@ -323,8 +323,8 @@ class TestUnionProperty:
         )
         expected = {
             "import datetime",
+            "from ...datetime import str_to_datetime",
             "from typing import cast",
-            "from dateutil.parser import isoparse",
             "from typing import cast, Union",
         }
         if nullable:
@@ -1055,7 +1055,10 @@ class TestStringBasedProperty:
         )
 
         assert p == date_time_property_factory(
-            name=name, required=required, nullable=True, default=f"isoparse('{data.default}')"
+            name=name,
+            required=required,
+            nullable=True,
+            default=f"datetime.datetime.fromisoformat('{data.default}')",
         )
 
     def test_datetime_bad_default(self):
@@ -1085,7 +1088,7 @@ class TestStringBasedProperty:
         )
 
         assert p == date_property_factory(
-            name=name, required=required, nullable=nullable, default=f"isoparse('{data.default}').date()"
+            name=name, required=required, nullable=nullable, default=f"datetime.date.fromisoformat('{data.default}')"
         )
 
     def test_date_format_bad_default(self):

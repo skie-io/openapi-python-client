@@ -3,7 +3,8 @@ from typing import Any, Dict, List, Type, TypeVar
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-from dateutil.parser import isoparse
+
+from ..datetime import str_to_datetime
 
 T = TypeVar("T", bound="ModelWithPrimitiveAdditionalPropertiesADateHolder")
 
@@ -30,7 +31,7 @@ class ModelWithPrimitiveAdditionalPropertiesADateHolder:
 
         additional_properties = {}
         for prop_name, prop_dict in d.items():
-            additional_property = isoparse(prop_dict)
+            additional_property = str_to_datetime(prop_dict)
 
             additional_properties[prop_name] = additional_property
 

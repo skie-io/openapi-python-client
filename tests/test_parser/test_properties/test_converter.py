@@ -25,11 +25,11 @@ def test_convert_str():
 
 
 def test_convert_datetime():
-    assert convert("datetime.datetime", "2021-01-20") == "isoparse('2021-01-20')"
+    assert convert("datetime.datetime", "2021-01-20") == "datetime.datetime.fromisoformat('2021-01-20')"
 
 
 def test_convert_date():
-    assert convert("datetime.date", "2021-01-20") == "isoparse('2021-01-20').date()"
+    assert convert("datetime.date", "2021-01-20") == "datetime.date.fromisoformat('2021-01-20')"
 
 
 def test_convert_chain_no_valid():
