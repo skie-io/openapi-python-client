@@ -5,8 +5,8 @@ from uuid import UUID
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-from dateutil.parser import isoparse
 
+from ..datetime import str_to_date, str_to_datetime
 from ..models.an_all_of_enum import AnAllOfEnum
 from ..models.an_enum import AnEnum
 from ..models.different_enum import DifferentEnum
@@ -274,20 +274,20 @@ class Extended:
             try:
                 if not isinstance(data, str):
                     raise TypeError()
-                a_camel_date_time_type_0 = isoparse(data)
+                a_camel_date_time_type_0 = str_to_datetime(data)
 
                 return a_camel_date_time_type_0
             except:  # noqa: E722
                 pass
             if not isinstance(data, str):
                 raise TypeError()
-            a_camel_date_time_type_1 = isoparse(data).date()
+            a_camel_date_time_type_1 = str_to_date(data)
 
             return a_camel_date_time_type_1
 
         a_camel_date_time = _parse_a_camel_date_time(d.pop("aCamelDateTime"))
 
-        a_date = isoparse(d.pop("a_date")).date()
+        a_date = str_to_date(d.pop("a_date"))
 
         def _parse_a_nullable_date(data: object) -> Union[None, datetime.date]:
             if data is None:
@@ -295,7 +295,7 @@ class Extended:
             try:
                 if not isinstance(data, str):
                     raise TypeError()
-                a_nullable_date_type_0 = isoparse(data).date()
+                a_nullable_date_type_0 = str_to_date(data)
 
                 return a_nullable_date_type_0
             except:  # noqa: E722
@@ -417,7 +417,7 @@ class Extended:
         if isinstance(_a_not_required_date, Unset):
             a_not_required_date = UNSET
         else:
-            a_not_required_date = isoparse(_a_not_required_date).date()
+            a_not_required_date = str_to_date(_a_not_required_date)
 
         _a_not_required_uuid = d.pop("a_not_required_uuid", UNSET)
         a_not_required_uuid: Union[Unset, UUID]

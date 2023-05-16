@@ -122,8 +122,8 @@ class TestUnionProperty:
         )
         expected = {
             "import datetime",
+            "from ...datetime import str_to_datetime",
             "from typing import cast",
-            "from dateutil.parser import isoparse",
             "from typing import cast, Union",
         }
         if not required:

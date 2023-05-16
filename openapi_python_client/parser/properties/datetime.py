@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+import datetime
+import sys
 from typing import Any, ClassVar
 
 from attr import define
-from dateutil.parser import isoparse
 
 from ...utils import PythonIdentifier
 from ..errors import PropertyError
@@ -56,10 +57,10 @@ class DateTimeProperty(PropertyProtocol):
             return value
         if isinstance(value, str):
             try:
-                isoparse(value)  # make sure it's a valid value
+                _check_datetime(value)  # make sure it's a valid value
             except ValueError as e:
                 return PropertyError(f"Invalid datetime: {e}")
-            return Value(python_code=f"isoparse({value!r})", raw_value=value)
+            return Value(f"str_to_datetime({value!r})", raw_value=value)
         return PropertyError(f"Cannot convert {value} to a datetime")
 
     def get_imports(self, *, prefix: str) -> set[str]:
@@ -71,5 +72,16 @@ class DateTimeProperty(PropertyProtocol):
             back to the root of the generated client.
         """
         imports = super().get_imports(prefix=prefix)
-        imports.update({"import datetime", "from typing import cast", "from dateutil.parser import isoparse"})
+        imports.update({"import datetime", f"from {prefix}datetime import str_to_datetime", "from typing import cast"})
         return imports
+
+
+if sys.version_info >= (3, 11):
+
+    def _check_datetime(datetime_str: str) -> datetime.datetime:
+        return datetime.datetime.fromisoformat(datetime_str)
+
+else:
+
+    def _check_datetime(datetime_str: str) -> datetime.datetime:
+        return datetime.datetime.fromisoformat(datetime_str.replace("Z", "+00:00"))

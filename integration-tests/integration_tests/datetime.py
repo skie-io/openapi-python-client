@@ -1,0 +1,17 @@
+import datetime
+import sys
+
+
+def str_to_date(date_str: str) -> datetime.date:
+    return datetime.date.fromisoformat(date_str)
+
+
+if sys.version_info >= (3, 11):
+
+    def str_to_datetime(datetime_str: str) -> datetime.datetime:
+        return datetime.datetime.fromisoformat(datetime_str)
+
+else:
+
+    def str_to_datetime(datetime_str: str) -> datetime.datetime:
+        return datetime.datetime.fromisoformat(datetime_str.rstrip("Z")).replace(tzinfo=datetime.timezone.utc)

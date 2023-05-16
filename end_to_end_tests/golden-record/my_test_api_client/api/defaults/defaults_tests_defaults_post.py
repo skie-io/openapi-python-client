@@ -4,7 +4,6 @@ from typing import Any, Union
 
 import httpx
 import orjson
-from dateutil.parser import isoparse
 
 from ... import errors
 from ...client import Client
@@ -18,7 +17,7 @@ def _get_kwargs(
     *,
     string_prop: str = "the default string",
     string_with_num: str = "1",
-    date_prop: datetime.date = isoparse("1010-10-10").date(),
+    date_prop: datetime.date = datetime.date.fromisoformat("1010-10-10"),
     float_prop: float = 3.14,
     float_with_int: float = 3.0,
     int_prop: int = 7,
@@ -112,7 +111,7 @@ def sync_detailed(
     client: Client,
     string_prop: str = "the default string",
     string_with_num: str = "1",
-    date_prop: datetime.date = isoparse("1010-10-10").date(),
+    date_prop: datetime.date = datetime.date.fromisoformat("1010-10-10"),
     float_prop: float = 3.14,
     float_with_int: float = 3.0,
     int_prop: int = 7,
@@ -129,7 +128,7 @@ def sync_detailed(
     Args:
         string_prop (str):  Default: 'the default string'.
         string_with_num (str):  Default: '1'.
-        date_prop (datetime.date):  Default: isoparse('1010-10-10').date().
+        date_prop (datetime.date):  Default: datetime.date.fromisoformat('1010-10-10').
         float_prop (float):  Default: 3.14.
         float_with_int (float):  Default: 3.0.
         int_prop (int):  Default: 7.
@@ -176,7 +175,7 @@ def sync(
     client: Client,
     string_prop: str = "the default string",
     string_with_num: str = "1",
-    date_prop: datetime.date = isoparse("1010-10-10").date(),
+    date_prop: datetime.date = datetime.date.fromisoformat("1010-10-10"),
     float_prop: float = 3.14,
     float_with_int: float = 3.0,
     int_prop: int = 7,
@@ -193,7 +192,7 @@ def sync(
     Args:
         string_prop (str):  Default: 'the default string'.
         string_with_num (str):  Default: '1'.
-        date_prop (datetime.date):  Default: isoparse('1010-10-10').date().
+        date_prop (datetime.date):  Default: datetime.date.fromisoformat('1010-10-10').
         float_prop (float):  Default: 3.14.
         float_with_int (float):  Default: 3.0.
         int_prop (int):  Default: 7.
@@ -235,7 +234,7 @@ async def asyncio_detailed(
     client: Client,
     string_prop: str = "the default string",
     string_with_num: str = "1",
-    date_prop: datetime.date = isoparse("1010-10-10").date(),
+    date_prop: datetime.date = datetime.date.fromisoformat("1010-10-10"),
     float_prop: float = 3.14,
     float_with_int: float = 3.0,
     int_prop: int = 7,
@@ -252,7 +251,7 @@ async def asyncio_detailed(
     Args:
         string_prop (str):  Default: 'the default string'.
         string_with_num (str):  Default: '1'.
-        date_prop (datetime.date):  Default: isoparse('1010-10-10').date().
+        date_prop (datetime.date):  Default: datetime.date.fromisoformat('1010-10-10').
         float_prop (float):  Default: 3.14.
         float_with_int (float):  Default: 3.0.
         int_prop (int):  Default: 7.
@@ -297,7 +296,7 @@ async def asyncio(
     client: Client,
     string_prop: str = "the default string",
     string_with_num: str = "1",
-    date_prop: datetime.date = isoparse("1010-10-10").date(),
+    date_prop: datetime.date = datetime.date.fromisoformat("1010-10-10"),
     float_prop: float = 3.14,
     float_with_int: float = 3.0,
     int_prop: int = 7,
@@ -314,7 +313,7 @@ async def asyncio(
     Args:
         string_prop (str):  Default: 'the default string'.
         string_with_num (str):  Default: '1'.
-        date_prop (datetime.date):  Default: isoparse('1010-10-10').date().
+        date_prop (datetime.date):  Default: datetime.date.fromisoformat('1010-10-10').
         float_prop (float):  Default: 3.14.
         float_with_int (float):  Default: 3.0.
         int_prop (int):  Default: 7.
