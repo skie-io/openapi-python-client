@@ -47,8 +47,8 @@ class TestDateTimeProperty:
 
         expected = {
             "import datetime",
+            "from ...datetime import str_to_datetime",
             "from typing import cast",
-            "from dateutil.parser import isoparse",
         }
         if not required:
             expected |= {
@@ -69,8 +69,8 @@ class TestDateProperty:
 
         expected = {
             "import datetime",
+            "from ...datetime import str_to_date",
             "from typing import cast",
-            "from dateutil.parser import isoparse",
         }
         if not required:
             expected |= {
@@ -200,8 +200,8 @@ class TestListProperty:
         p = list_property_factory(inner_property=inner_property, required=required)
         expected = {
             "import datetime",
+            "from ...datetime import str_to_datetime",
             "from typing import cast",
-            "from dateutil.parser import isoparse",
         }
         if not required:
             expected |= {
@@ -300,8 +300,8 @@ class TestUnionProperty:
         )
         expected = {
             "import datetime",
+            "from ...datetime import str_to_datetime",
             "from typing import cast",
-            "from dateutil.parser import isoparse",
             "from typing import cast, Union",
         }
         if not required:
@@ -813,7 +813,7 @@ class TestStringBasedProperty:
         assert p == date_time_property_factory(
             name=name,
             required=required,
-            default=Value(python_code=f"isoparse('{data.default}')", raw_value=data.default),
+            default=Value(python_code=f"datetime.datetime.fromisoformat('{data.default}')", raw_value=data.default),
         )
 
     def test_datetime_bad_default(self, config):
@@ -845,7 +845,7 @@ class TestStringBasedProperty:
         assert p == date_property_factory(
             name=name,
             required=required,
-            default=Value(python_code=f"isoparse('{data.default}').date()", raw_value=data.default),
+            default=Value(python_code=f"datetime.date.fromisoformat('{data.default}')", raw_value=data.default),
         )
 
     def test_date_format_bad_default(self, config):
