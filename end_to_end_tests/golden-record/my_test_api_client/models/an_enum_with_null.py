@@ -7,3 +7,7 @@ class AnEnumWithNull(str, Enum):
 
     def __str__(self) -> str:
         return str(self.value)
+
+    @classmethod
+    def from_values(cls, *values: str) -> list["AnEnumWithNull"]:
+        return [cls(value) for value in values]
