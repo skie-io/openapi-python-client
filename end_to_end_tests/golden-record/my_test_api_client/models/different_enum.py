@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import List
 
 
 class DifferentEnum(str, Enum):
@@ -7,3 +8,7 @@ class DifferentEnum(str, Enum):
 
     def __str__(self) -> str:
         return str(self.value)
+
+    @classmethod
+    def from_values(cls, *values: str) -> List["DifferentEnum"]:
+        return [cls(value) for value in values]
