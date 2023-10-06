@@ -12,7 +12,7 @@ include = ["CHANGELOG.md", "my_test_api_client/py.typed"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-httpx = ">=0.20.0,<0.28.0"
+httpx = ">=0.23.0,<0.28.0"
 attrs = ">=21.3.0"
 pyjwt = {extras = ["crypto"], version = "^2.8.0"}
 orjson = "^3.9.15"
