@@ -91,7 +91,7 @@ jobs:
     strategy:
       matrix:
         httpx_version:
-          - "0.20.0"
+          - "0.23.0"
           - ""
     services:
       openapi-test-server:
@@ -141,12 +141,10 @@ jobs:
       - name: Set httpx version
         if: matrix.httpx_version != ''
         run: |
-          cd integration-tests 
+          cd integration-tests
           poetry run pip install httpx==${{ matrix.httpx_version }}
       - name: Run Tests
         run: |
           cd integration-tests
           poetry run pytest
           poetry run mypy . --strict
-  
-  
