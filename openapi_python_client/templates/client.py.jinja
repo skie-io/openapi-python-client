@@ -1,4 +1,6 @@
-from typing import Any, Dict, Union, Optional
+from asyncio import Lock
+from threading import RLock
+from typing import Any, Dict, Optional
 
 from attrs import define, field
 import httpx
@@ -43,28 +45,41 @@ class Client:
     _httpx_args: Dict[str, Any] = field(factory=dict, kw_only=True, alias="httpx_args")
     _client: Optional[httpx.Client] = field(default=None, init=False)
     _async_client: Optional[httpx.AsyncClient] = field(default=None, init=False)
+    _lock: RLock = field(init=False)
+    _async_lock: Lock = field(init=False)
     _key: str = field(kw_only=True)
     _key_fingerprint: str = field(kw_only=True)
     _jwt_expiration: int = field(default=60, kw_only=True)
 
+    def __attrs_post_init__(self) -> None:
+        self._lock = RLock()
+        self._async_lock = Lock()
+
 {% endmacro %}{{ attributes() }}
-{% macro httpx_stuff(name, custom_constructor=None) %}
+{% macro httpx_stuff(name) %}
+    def _init_httpx_client(self) -> httpx.Client:
+        auth = SyncJWTAuth(key=self._key, kid=self._key_fingerprint, exp=self._jwt_expiration)
+
+        return httpx.Client(
+            auth=auth,
+            base_url=self._base_url,
+            headers=self._headers,
+            timeout=httpx.Timeout(self._timeout, pool=None),
+            limits=httpx.Limits(max_connections=self._pool_size, max_keepalive_connections=self._pool_size),
+            **self._httpx_args,
+        )
+
     def get_httpx_client(self) -> httpx.Client:
         """Get the underlying httpx.Client, constructing a new one if not previously set"""
-        if self._client is None:
-        {% if custom_constructor %}
-            {{ custom_constructor | indent(12) }}
-        {% endif %}
-            auth = SyncJWTAuth(key=self._key, kid=self._key_fingerprint, exp=self._jwt_expiration)
+        if self._client:
+            return self._client
 
-            self._client = httpx.Client(
-                auth=auth,
-                base_url=self._base_url,
-                headers=self._headers,
-                timeout=httpx.Timeout(self._timeout, pool=None),
-                limits=httpx.Limits(max_connections=self._pool_size, max_keepalive_connections=self._pool_size),
-                **self._httpx_args,
-            )
+        with self._lock:
+            if self._client:
+                return self._client
+
+            self._client = self._init_httpx_client()
+
         return self._client
 
     def __enter__(self) -> "{{ name }}":
@@ -76,32 +91,41 @@ class Client:
         """Exit a context manager for internal httpx.Client (see httpx docs)"""
         self.get_httpx_client().__exit__(*args, **kwargs)
 
-    def get_async_httpx_client(self) -> httpx.AsyncClient:
+    def _init_async_httpx_client(self) -> httpx.AsyncClient:
         """Get the underlying httpx.AsyncClient, constructing a new one if not previously set"""
-        if self._async_client is None:
-        {% if custom_constructor %}
-            {{ custom_constructor | indent(12) }}
-        {% endif %}
-            auth = AsyncJWTAuth(key=self._key, kid=self._key_fingerprint, exp=self._jwt_expiration)
+        auth = AsyncJWTAuth(key=self._key, kid=self._key_fingerprint, exp=self._jwt_expiration)
 
-            self._async_client = httpx.AsyncClient(
-                auth=auth,
-                base_url=self._base_url,
-                headers=self._headers,
-                timeout=httpx.Timeout(self._timeout, pool=None),
-                limits=httpx.Limits(max_connections=self._pool_size, max_keepalive_connections=self._pool_size),
-                **self._httpx_args,
-            )
+        return httpx.AsyncClient(
+            auth=auth,
+            base_url=self._base_url,
+            headers=self._headers,
+            timeout=httpx.Timeout(self._timeout, pool=None),
+            limits=httpx.Limits(max_connections=self._pool_size, max_keepalive_connections=self._pool_size),
+            **self._httpx_args,
+        )
+
+    async def get_async_httpx_client(self) -> httpx.AsyncClient:
+        if self._async_client:
+            return self._async_client
+
+        async with self._async_lock:
+            if self._async_client:
+                return self._async_client
+
+            self._async_client = self._init_async_httpx_client()
+
         return self._async_client
 
     async def __aenter__(self) -> "{{ name }}":
         """Enter a context manager for underlying httpx.AsyncClient—you cannot enter twice (see httpx docs)"""
-        await self.get_async_httpx_client().__aenter__()
+        client = await self.get_async_httpx_client()
+        await client.__aenter__()
         return self
 
     async def __aexit__(self, *args: Any, **kwargs: Any) -> None:
         """Exit a context manager for underlying httpx.AsyncClient (see httpx docs)"""
-        await self.get_async_httpx_client().__aexit__(*args, **kwargs)
+        client = await self.get_async_httpx_client()
+        await client.__aexit__(*args, **kwargs)
 
     def request(
         self,
@@ -140,7 +164,8 @@ class Client:
         if json is not None:
             json = encode_json(json)
 
-        response = await self.get_async_httpx_client().request(
+        client = await self.get_async_httpx_client()
+        response = await client.request(
             method=method, url=url, data=data, files=files, content=json, params=params, headers=headers
         )
 
