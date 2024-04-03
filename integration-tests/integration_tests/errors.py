@@ -49,4 +49,8 @@ class ServerError(HTTPError):
     """Raised when the response status is 5xx."""
 
 
-__all__ = ["UnexpectedStatus", "PaginationError"]
+class NotFoundError(ClientError):
+    """Raised when the response status is 404."""
+
+
+__all__ = ["UnexpectedStatus", "PaginationError", "NotFoundError", "ClientError"]
