@@ -5,7 +5,7 @@ from typing import Any, Optional
 import httpx
 from attrs import define, field
 
-from .errors import ClientError, InformationalResponse, RedirectionError, ServerError
+from .errors import ClientError, InformationalResponse, NotFoundError, RedirectionError, ServerError
 from .json import encode_json
 from .jwt import AsyncJWTAuth, SyncJWTAuth
 
@@ -173,6 +173,9 @@ class Client:
     def _check_response_status(self, response: httpx.Response) -> None:
         if response.is_success:
             return
+
+        if response.status_code == 404:
+            raise NotFoundError(response)
 
         if response.is_informational:
             raise InformationalResponse(response)
