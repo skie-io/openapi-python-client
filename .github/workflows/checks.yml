@@ -2,7 +2,7 @@ name: Run Checks
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "sync-with-upstream" ]
   pull_request:
     branches: [ "main" ]
   merge_group:
