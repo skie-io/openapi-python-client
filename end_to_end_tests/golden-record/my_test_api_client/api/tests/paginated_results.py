@@ -28,7 +28,7 @@ def _get_kwargs(
 
 
 def _parse_response(*, client: Client, response: httpx.Response) -> PaginatedResult:
-    if response.status_code == HTTPStatus.OK:
+    if response.status_code == 200:
         response_200 = PaginatedResult.from_dict(orjson.loads(response.content))
 
         return response_200

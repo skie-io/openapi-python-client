@@ -27,7 +27,7 @@ def _get_kwargs(
 
 
 def _parse_response(*, client: Client, response: httpx.Response) -> PostNamingPropertyConflictWithImportResponse200:
-    if response.status_code == HTTPStatus.OK:
+    if response.status_code == 200:
         response_200 = PostNamingPropertyConflictWithImportResponse200.from_dict(orjson.loads(response.content))
 
         return response_200

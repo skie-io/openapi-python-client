@@ -58,7 +58,7 @@ def _get_kwargs(
 
 def _parse_response(*, client: Client, response: httpx.Response) -> {{ return_string }}:
     {% for response in endpoint.responses %}
-    if response.status_code == HTTPStatus.{{ response.status_code.name }}:
+    if response.status_code == {{ response.status_code.value }}:
         {% if parsed_responses %}{% import "property_templates/" + response.prop.template as prop_template %}
         {% if prop_template.construct %}
         {{ prop_template.construct(response.prop, response.source) | indent(8) }}

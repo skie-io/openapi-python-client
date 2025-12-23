@@ -17,7 +17,7 @@ def _get_kwargs() -> Dict[str, Any]:
 
 
 def _parse_response(*, client: Client, response: httpx.Response) -> File:
-    if response.status_code == HTTPStatus.OK:
+    if response.status_code == 200:
         response_200 = File(payload=BytesIO(response.content))
 
         return response_200

@@ -29,11 +29,11 @@ def _get_kwargs(
 
 
 def _parse_response(*, client: Client, response: httpx.Response) -> Union[PaginatedResult, PaginatedResultError]:
-    if response.status_code == HTTPStatus.OK:
+    if response.status_code == 200:
         response_200 = PaginatedResult.from_dict(orjson.loads(response.content))
 
         return response_200
-    if response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY:
+    if response.status_code == 422:
         response_422 = PaginatedResultError.from_dict(orjson.loads(response.content))
 
         return response_422

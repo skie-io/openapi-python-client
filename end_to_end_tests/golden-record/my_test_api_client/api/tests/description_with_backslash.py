@@ -16,7 +16,7 @@ def _get_kwargs() -> Dict[str, Any]:
 
 
 def _parse_response(*, client: Client, response: httpx.Response) -> Any:
-    if response.status_code == HTTPStatus.OK:
+    if response.status_code == 200:
         return None
     else:
         raise errors.UnexpectedStatus(response)
