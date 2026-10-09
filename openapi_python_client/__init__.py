@@ -264,6 +264,11 @@ class Project:
         jwt_template = self.env.get_template("jwt.py.jinja")
         jwt_path.write_text(jwt_template.render(), encoding=self.file_encoding)
 
+        # Generate auth
+        auth_path = self.package_dir / "auth.py"
+        auth_template = self.env.get_template("auth.py.jinja")
+        auth_path.write_text(auth_template.render(), encoding=self.file_encoding)
+
         # Generate json
         json_path = self.package_dir / "json.py"
         json_template = self.env.get_template("json.py.jinja")

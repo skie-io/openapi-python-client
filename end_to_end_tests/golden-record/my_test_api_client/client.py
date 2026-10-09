@@ -3,6 +3,7 @@ from typing import Any, Dict, Optional
 import httpx
 from attrs import define, field
 
+from .auth import TokenAuth
 from .errors import ClientError, InformationalResponse, NotFoundError, RedirectionError, ServerError
 from .json import add_json_headers, encode_json
 from .jwt import AsyncJWTAuth, SyncJWTAuth
@@ -26,11 +27,14 @@ class Client:
         ``httpx_args``: A dictionary of additional arguments to be passed to the ``httpx.Client`` and ``httpx.AsyncClient`` constructor.
 
 
+    Requests are authenticated either with a JWT signed by ``key`` and ``key_fingerprint``, or with an opaque ``token``.
+
     Attributes:
         raise_for_status: Raise an exception for any responses which are not a 2xx success code.
         key: The private key used to sign the JWT encoded with ES256.
         key_fingerprint: Key ID or fingerprint.
         jwt_expiration: Controls the expiration time for a JWT. 60 seconds by default.
+        token: An opaque token sent as ``Bearer <token>``. Use it instead of ``key`` and ``key_fingerprint``.
     """
 
     raise_for_status: bool = field(default=True, kw_only=True)
@@ -41,9 +45,17 @@ class Client:
     _httpx_args: Dict[str, Any] = field(factory=dict, kw_only=True)
     _client: Optional[httpx.Client] = field(default=None, init=False)
     _async_client: Optional[httpx.AsyncClient] = field(default=None, init=False)
-    _key: str = field(kw_only=True)
-    _key_fingerprint: str = field(kw_only=True)
+    _key: str = field(default="", kw_only=True)
+    _key_fingerprint: str = field(default="", kw_only=True)
     _jwt_expiration: int = field(default=60, kw_only=True)
+    _token: str = field(default="", kw_only=True)
+
+    def __attrs_post_init__(self) -> None:
+        if self._token and (self._key or self._key_fingerprint):
+            raise ValueError("Pass either `token` or `key` and `key_fingerprint`, not both")
+
+        if not self._token and not (self._key and self._key_fingerprint):
+            raise ValueError("Pass either `token` or both `key` and `key_fingerprint`")
 
     def set_httpx_client(self, client: httpx.Client) -> "Client":
         """Manually the underlying httpx.Client
@@ -56,7 +68,10 @@ class Client:
     def get_httpx_client(self) -> httpx.Client:
         """Get the underlying httpx.Client, constructing a new one if not previously set"""
         if self._client is None:
-            auth = SyncJWTAuth(key=self._key, kid=self._key_fingerprint, exp=self._jwt_expiration)
+            if self._token:
+                auth: httpx.Auth = TokenAuth(token=self._token)
+            else:
+                auth = SyncJWTAuth(key=self._key, kid=self._key_fingerprint, exp=self._jwt_expiration)
 
             self._client = httpx.Client(
                 auth=auth,
@@ -88,7 +103,10 @@ class Client:
     def get_async_httpx_client(self) -> httpx.AsyncClient:
         """Get the underlying httpx.AsyncClient, constructing a new one if not previously set"""
         if self._async_client is None:
-            auth = AsyncJWTAuth(key=self._key, kid=self._key_fingerprint, exp=self._jwt_expiration)
+            if self._token:
+                auth: httpx.Auth = TokenAuth(token=self._token)
+            else:
+                auth = AsyncJWTAuth(key=self._key, kid=self._key_fingerprint, exp=self._jwt_expiration)
 
             self._async_client = httpx.AsyncClient(
                 auth=auth,
