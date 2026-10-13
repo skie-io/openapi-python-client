@@ -2,10 +2,10 @@ from http import HTTPStatus
 from typing import Any, Dict, List, cast
 
 import httpx
-import orjson
 
 from ... import errors
 from ...client import Client
+from ...serialization import decode_response
 from ...types import Response
 
 
@@ -18,7 +18,7 @@ def _get_kwargs() -> Dict[str, Any]:
 
 def _parse_response(*, client: Client, response: httpx.Response) -> List[bool]:
     if response.status_code == 200:
-        response_200 = cast(List[bool], orjson.loads(response.content))
+        response_200 = cast(List[bool], decode_response(response))
 
         return response_200
     else:

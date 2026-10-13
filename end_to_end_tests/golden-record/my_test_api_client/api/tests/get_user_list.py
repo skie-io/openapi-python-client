@@ -3,7 +3,6 @@ from http import HTTPStatus
 from typing import Any, Dict, List, Optional, Union
 
 import httpx
-import orjson
 
 from ... import errors
 from ...client import Client
@@ -11,6 +10,7 @@ from ...models.a_model import AModel
 from ...models.an_enum import AnEnum
 from ...models.an_enum_with_null import AnEnumWithNull
 from ...models.http_validation_error import HTTPValidationError
+from ...serialization import decode_response
 from ...types import UNSET, Response
 
 
@@ -65,7 +65,7 @@ def _get_kwargs(
 def _parse_response(*, client: Client, response: httpx.Response) -> Union[HTTPValidationError, List["AModel"]]:
     if response.status_code == 200:
         response_200 = []
-        _response_200 = orjson.loads(response.content)
+        _response_200 = decode_response(response)
         for response_200_item_data in _response_200:
             response_200_item = AModel.from_dict(response_200_item_data)
 
@@ -73,11 +73,11 @@ def _parse_response(*, client: Client, response: httpx.Response) -> Union[HTTPVa
 
         return response_200
     if response.status_code == 422:
-        response_422 = HTTPValidationError.from_dict(orjson.loads(response.content))
+        response_422 = HTTPValidationError.from_dict(decode_response(response))
 
         return response_422
     if response.status_code == 423:
-        response_423 = HTTPValidationError.from_dict(orjson.loads(response.content))
+        response_423 = HTTPValidationError.from_dict(decode_response(response))
 
         return response_423
     else:

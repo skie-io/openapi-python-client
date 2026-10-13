@@ -449,6 +449,48 @@
         }
       }
     },
+    "/tests/msgpack_body": {
+      "post": {
+        "tags": [
+          "tests"
+        ],
+        "summary": "MessagePack Body",
+        "description": "Try sending a MessagePack body",
+        "operationId": "msgpack_body_tests_msgpack_body_post",
+        "requestBody": {
+          "content": {
+            "application/msgpack": {
+              "schema": {
+                "$ref": "#/components/schemas/AModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/msgpack": {
+                "schema": {
+                  "$ref": "#/components/schemas/AModel"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/tests/defaults": {
       "post": {
         "tags": [

@@ -2,12 +2,12 @@ from http import HTTPStatus
 from typing import Any, Dict, Union
 
 import httpx
-import orjson
 
 from ... import errors
 from ...client import Client
 from ...models.post_parameters_header_response_200 import PostParametersHeaderResponse200
 from ...models.public_error import PublicError
+from ...serialization import decode_response
 from ...types import Response
 
 
@@ -36,11 +36,11 @@ def _get_kwargs(
 
 def _parse_response(*, client: Client, response: httpx.Response) -> Union[PostParametersHeaderResponse200, PublicError]:
     if response.status_code == 200:
-        response_200 = PostParametersHeaderResponse200.from_dict(orjson.loads(response.content))
+        response_200 = PostParametersHeaderResponse200.from_dict(decode_response(response))
 
         return response_200
     if response.status_code == 400:
-        response_400 = PublicError.from_dict(orjson.loads(response.content))
+        response_400 = PublicError.from_dict(decode_response(response))
 
         return response_400
     else:

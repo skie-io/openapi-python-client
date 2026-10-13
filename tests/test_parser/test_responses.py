@@ -1,5 +1,7 @@
 from unittest.mock import MagicMock
 
+import pytest
+
 import openapi_python_client.schema as oai
 from openapi_python_client.parser.errors import ParseError, PropertyError
 from openapi_python_client.parser.properties import Schemas
@@ -107,13 +109,23 @@ def test_response_from_data_property_error(mocker):
     )
 
 
-def test_response_from_data_property(mocker, property_factory):
+@pytest.mark.parametrize(
+    "content_type",
+    (
+        "application/json",
+        "application/vnd.api+json",
+        "application/msgpack",
+        "application/x-msgpack",
+        "application/vnd.msgpack",
+    ),
+)
+def test_response_from_data_property(mocker, property_factory, content_type):
     from openapi_python_client.parser import responses
 
     prop = property_factory()
     property_from_data = mocker.patch.object(responses, "property_from_data", return_value=(prop, Schemas()))
     data = oai.Response.model_construct(
-        description="", content={"application/json": oai.MediaType.model_construct(media_type_schema="something")}
+        description="", content={content_type: oai.MediaType.model_construct(media_type_schema="something")}
     )
     config = MagicMock()
 
@@ -124,7 +136,7 @@ def test_response_from_data_property(mocker, property_factory):
     assert response == responses.Response(
         status_code=400,
         prop=prop,
-        source="orjson.loads(response.content)",
+        source="decode_response(response)",
     )
     property_from_data.assert_called_once_with(
         name="response_400", required=True, data="something", schemas=Schemas(), parent_name="parent", config=config

@@ -2,7 +2,6 @@ from http import HTTPStatus
 from typing import Any, Dict
 
 import httpx
-import orjson
 
 from ... import errors
 from ...client import Client
@@ -10,6 +9,7 @@ from ...models.post_naming_property_conflict_with_import_json_body import PostNa
 from ...models.post_naming_property_conflict_with_import_response_200 import (
     PostNamingPropertyConflictWithImportResponse200,
 )
+from ...serialization import decode_response
 from ...types import Response
 
 
@@ -28,7 +28,7 @@ def _get_kwargs(
 
 def _parse_response(*, client: Client, response: httpx.Response) -> PostNamingPropertyConflictWithImportResponse200:
     if response.status_code == 200:
-        response_200 = PostNamingPropertyConflictWithImportResponse200.from_dict(orjson.loads(response.content))
+        response_200 = PostNamingPropertyConflictWithImportResponse200.from_dict(decode_response(response))
 
         return response_200
     else:

@@ -2,6 +2,9 @@
 from typing import Any
 
 import httpx
+import ormsgpack
+
+from .serialization import is_msgpack
 
 
 class BaseError(Exception):
@@ -17,6 +20,16 @@ class PaginationError(BaseError):
         super().__init__(f"Pagination error: expected {model}, got {type(response)}")
 
 
+def _format_body(response: httpx.Response) -> str:
+    if not is_msgpack(response):
+        return response.text
+
+    try:
+        return repr(ormsgpack.unpackb(response.content))
+    except ormsgpack.MsgpackDecodeError:
+        return response.text
+
+
 class HTTPError(BaseError):
     def __init__(self, response: httpx.Response):
         self.response = response
@@ -24,7 +37,7 @@ class HTTPError(BaseError):
         super().__init__(
             f"HTTP error: {self.response.status_code} {self.response.reason_phrase}\n"
             f"Response headers: {dict(self.response.headers)}\n"
-            f"Response body: {self.response.text}"
+            f"Response body: {_format_body(self.response)}"
         )
 
 

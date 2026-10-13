@@ -2,13 +2,13 @@ from http import HTTPStatus
 from typing import Any, Dict
 
 import httpx
-import orjson
 
 from ... import errors
 from ...client import Client
 from ...models.post_responses_unions_simple_before_complex_response_200 import (
     PostResponsesUnionsSimpleBeforeComplexResponse200,
 )
+from ...serialization import decode_response
 from ...types import Response
 
 
@@ -21,7 +21,7 @@ def _get_kwargs() -> Dict[str, Any]:
 
 def _parse_response(*, client: Client, response: httpx.Response) -> PostResponsesUnionsSimpleBeforeComplexResponse200:
     if response.status_code == 200:
-        response_200 = PostResponsesUnionsSimpleBeforeComplexResponse200.from_dict(orjson.loads(response.content))
+        response_200 = PostResponsesUnionsSimpleBeforeComplexResponse200.from_dict(decode_response(response))
 
         return response_200
     else:

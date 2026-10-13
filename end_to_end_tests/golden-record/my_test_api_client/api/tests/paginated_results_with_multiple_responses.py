@@ -2,13 +2,13 @@ from http import HTTPStatus
 from typing import Any, Dict, List, Union
 
 import httpx
-import orjson
 
 from ... import errors
 from ...client import Client
 from ...models.paginated_result import PaginatedResult
 from ...models.paginated_result_data_item import PaginatedResultDataItem
 from ...models.paginated_result_error import PaginatedResultError
+from ...serialization import decode_response
 from ...types import UNSET, Response, Unset
 
 
@@ -30,11 +30,11 @@ def _get_kwargs(
 
 def _parse_response(*, client: Client, response: httpx.Response) -> Union[PaginatedResult, PaginatedResultError]:
     if response.status_code == 200:
-        response_200 = PaginatedResult.from_dict(orjson.loads(response.content))
+        response_200 = PaginatedResult.from_dict(decode_response(response))
 
         return response_200
     if response.status_code == 422:
-        response_422 = PaginatedResultError.from_dict(orjson.loads(response.content))
+        response_422 = PaginatedResultError.from_dict(decode_response(response))
 
         return response_422
     else:

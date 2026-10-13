@@ -1,0 +1,156 @@
+from http import HTTPStatus
+from typing import Any, Dict, Union
+
+import httpx
+
+from ... import errors
+from ...client import Client
+from ...models.a_model import AModel
+from ...models.http_validation_error import HTTPValidationError
+from ...serialization import decode_response
+from ...types import Response
+
+
+def _get_kwargs(
+    *,
+    json_body: AModel,
+) -> Dict[str, Any]:
+    json_json_body = json_body.to_dict()
+
+    return {
+        "method": "post",
+        "url": "/tests/msgpack_body",
+        "json": json_json_body,
+    }
+
+
+def _parse_response(*, client: Client, response: httpx.Response) -> Union[AModel, HTTPValidationError]:
+    if response.status_code == 200:
+        response_200 = AModel.from_dict(decode_response(response))
+
+        return response_200
+    if response.status_code == 422:
+        response_422 = HTTPValidationError.from_dict(decode_response(response))
+
+        return response_422
+    else:
+        raise errors.UnexpectedStatus(response)
+
+
+def _build_response(*, client: Client, response: httpx.Response) -> Response[Union[AModel, HTTPValidationError]]:
+    return Response(
+        status_code=HTTPStatus(response.status_code),
+        content=response.content,
+        headers=response.headers,
+        parsed=_parse_response(client=client, response=response),
+    )
+
+
+def sync_detailed(
+    *,
+    client: Client,
+    json_body: AModel,
+) -> Response[Union[AModel, HTTPValidationError]]:
+    """MessagePack Body
+
+     Try sending a MessagePack body
+
+    Args:
+        json_body (AModel): A Model for testing all the ways custom objects can be used
+
+    Raises:
+        httpx.TimeoutException: If the request takes longer than Client.timeout.
+
+    Returns:
+        Response[Union[AModel, HTTPValidationError]]
+    """
+
+    kwargs = _get_kwargs(
+        json_body=json_body,
+    )
+
+    response = client.request(
+        **kwargs,
+    )
+
+    return _build_response(client=client, response=response)
+
+
+def sync(
+    *,
+    client: Client,
+    json_body: AModel,
+) -> Union[AModel, HTTPValidationError]:
+    """MessagePack Body
+
+     Try sending a MessagePack body
+
+    Args:
+        json_body (AModel): A Model for testing all the ways custom objects can be used
+
+    Raises:
+        httpx.TimeoutException: If the request takes longer than Client.timeout.
+
+    Returns:
+        Union[AModel, HTTPValidationError]
+    """
+
+    return sync_detailed(
+        client=client,
+        json_body=json_body,
+    ).parsed
+
+
+async def asyncio_detailed(
+    *,
+    client: Client,
+    json_body: AModel,
+) -> Response[Union[AModel, HTTPValidationError]]:
+    """MessagePack Body
+
+     Try sending a MessagePack body
+
+    Args:
+        json_body (AModel): A Model for testing all the ways custom objects can be used
+
+    Raises:
+        httpx.TimeoutException: If the request takes longer than Client.timeout.
+
+    Returns:
+        Response[Union[AModel, HTTPValidationError]]
+    """
+
+    kwargs = _get_kwargs(
+        json_body=json_body,
+    )
+
+    response = await client.async_request(**kwargs)
+
+    return _build_response(client=client, response=response)
+
+
+async def asyncio(
+    *,
+    client: Client,
+    json_body: AModel,
+) -> Union[AModel, HTTPValidationError]:
+    """MessagePack Body
+
+     Try sending a MessagePack body
+
+    Args:
+        json_body (AModel): A Model for testing all the ways custom objects can be used
+
+    Raises:
+        httpx.TimeoutException: If the request takes longer than Client.timeout.
+
+    Returns:
+        Union[AModel, HTTPValidationError]
+    """
+
+    return (
+        await asyncio_detailed(
+            client=client,
+            json_body=json_body,
+        )
+    ).parsed

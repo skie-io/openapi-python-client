@@ -2,12 +2,12 @@ from http import HTTPStatus
 from typing import Any, Dict
 
 import httpx
-import orjson
 
 from ... import errors
 from ...client import Client
 from ...models.test_inline_objects_json_body import TestInlineObjectsJsonBody
 from ...models.test_inline_objects_response_200 import TestInlineObjectsResponse200
+from ...serialization import decode_response
 from ...types import Response
 
 
@@ -26,7 +26,7 @@ def _get_kwargs(
 
 def _parse_response(*, client: Client, response: httpx.Response) -> TestInlineObjectsResponse200:
     if response.status_code == 200:
-        response_200 = TestInlineObjectsResponse200.from_dict(orjson.loads(response.content))
+        response_200 = TestInlineObjectsResponse200.from_dict(decode_response(response))
 
         return response_200
     else:

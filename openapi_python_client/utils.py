@@ -5,6 +5,7 @@ from keyword import iskeyword
 from typing import Any, List
 
 DELIMITERS = r"\. _-"
+MSGPACK_CONTENT_TYPES = ("application/msgpack", "application/x-msgpack", "application/vnd.msgpack")
 
 
 class PythonIdentifier(str):

@@ -13,6 +13,7 @@ from . import (
     get_user_list,
     int_enum_tests_int_enum_post,
     json_body_tests_json_body_post,
+    msgpack_body_tests_msgpack_body_post,
     no_response_tests_no_response_get,
     octet_stream_tests_octet_stream_get,
     paginated_results,
@@ -104,6 +105,13 @@ class TestsEndpoints:
         Json Body Which is String
         """
         return post_tests_json_body_string
+
+    @classmethod
+    def msgpack_body_tests_msgpack_body_post(cls) -> types.ModuleType:
+        """
+        Try sending a MessagePack body
+        """
+        return msgpack_body_tests_msgpack_body_post
 
     @classmethod
     def defaults_tests_defaults_post(cls) -> types.ModuleType:

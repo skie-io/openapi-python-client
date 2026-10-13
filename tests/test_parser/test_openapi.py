@@ -244,6 +244,9 @@ class TestEndpoint:
             "application/vnd.api+json",
             "application/yang-data+json",
             "application/json;charset=utf-8",
+            "application/msgpack",
+            "application/x-msgpack",
+            "application/vnd.msgpack",
         ),
     )
     def test_parse_request_json_body(self, mocker, content_type):

@@ -185,7 +185,11 @@ class Endpoint:
         for content_type, schema in body.content.items():
             content_type = get_content_type(content_type)  # noqa: PLW2901
 
-            if content_type == "application/json" or content_type.endswith("+json"):
+            if (
+                content_type == "application/json"
+                or content_type.endswith("+json")
+                or content_type in utils.MSGPACK_CONTENT_TYPES
+            ):
                 json_body = schema
                 break
 

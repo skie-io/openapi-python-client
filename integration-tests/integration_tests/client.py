@@ -5,8 +5,8 @@ from attrs import define, field
 
 from .auth import TokenAuth
 from .errors import ClientError, InformationalResponse, NotFoundError, RedirectionError, ServerError
-from .json import add_json_headers, encode_json
 from .jwt import AsyncJWTAuth, SyncJWTAuth
+from .serialization import add_json_headers, add_msgpack_accept_header, add_msgpack_headers, encode_json, encode_msgpack
 
 
 @define
@@ -35,6 +35,7 @@ class Client:
         key_fingerprint: Key ID or fingerprint.
         jwt_expiration: Controls the expiration time for a JWT. 60 seconds by default.
         token: An opaque token sent as ``Bearer <token>``. Use it instead of ``key`` and ``key_fingerprint``.
+        msgpack: Send request bodies as MessagePack and request MessagePack responses.
     """
 
     raise_for_status: bool = field(default=True, kw_only=True)
@@ -49,6 +50,7 @@ class Client:
     _key_fingerprint: str = field(default="", kw_only=True)
     _jwt_expiration: int = field(default=60, kw_only=True)
     _token: str = field(default="", kw_only=True)
+    _msgpack: bool = field(default=False, kw_only=True)
 
     def __attrs_post_init__(self) -> None:
         if self._token and (self._key or self._key_fingerprint):
@@ -138,7 +140,12 @@ class Client:
         params: Optional[Dict[str, Any]] = None,
         headers: Optional[Dict[str, str]] = None,
     ) -> httpx.Response:
-        if json is not None:
+        if self._msgpack:
+            headers = add_msgpack_accept_header(headers)
+            if json is not None:
+                headers = add_msgpack_headers(headers)
+                json = encode_msgpack(json)
+        elif json is not None:
             headers = add_json_headers(headers)
             json = encode_json(json)
 
@@ -162,7 +169,12 @@ class Client:
         params: Optional[Dict[str, Any]] = None,
         headers: Optional[Dict[str, str]] = None,
     ) -> httpx.Response:
-        if json is not None:
+        if self._msgpack:
+            headers = add_msgpack_accept_header(headers)
+            if json is not None:
+                headers = add_msgpack_headers(headers)
+                json = encode_msgpack(json)
+        elif json is not None:
             headers = add_json_headers(headers)
             json = encode_json(json)
 
