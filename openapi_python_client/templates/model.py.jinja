@@ -88,7 +88,9 @@ class {{ class_name }}:
 {{ property.python_name }} = self.{{ property.python_name }}
 {% endif %}
 {% endfor %}
+{% if model.required_properties or model.optional_properties %}
 
+{% endif %}
 field_dict: Dict[str, Any] = {}
 {% if model.additional_properties %}
 {% if model.additional_properties.template %}{# Can be a bool instead of an object #}

@@ -1,6 +1,6 @@
 [tool.black]
 line-length = 120
-target_version = ['py38', 'py39', 'py310', 'py311']
+target_version = ['py311', 'py312', 'py313', 'py314', 'py315']
 exclude = '''
 (
   /(
@@ -12,5 +12,7 @@ exclude = '''
 '''
 
 [tool.ruff]
-select = ["F", "I"]
 line-length = 120
+
+[tool.ruff.lint]
+select = ["F", "I"]

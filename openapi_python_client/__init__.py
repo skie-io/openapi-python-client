@@ -1,14 +1,15 @@
-""" Generate modern Python clients from OpenAPI """
+"""Generate modern Python clients from OpenAPI"""
 
 import json
 import mimetypes
 import shutil
 import subprocess
-from enum import Enum
+from collections.abc import Sequence
+from enum import StrEnum
 from importlib.metadata import version
 from pathlib import Path
 from subprocess import CalledProcessError
-from typing import Any, Dict, List, Optional, Sequence, Union
+from typing import Any
 
 import httpcore
 import httpx
@@ -24,7 +25,7 @@ from .parser.errors import ErrorLevel, GeneratorError
 __version__ = version(__package__)
 
 
-class MetaType(str, Enum):
+class MetaType(StrEnum):
     """The types of metadata supported for project generation."""
 
     NONE = "none"
@@ -49,7 +50,7 @@ class Project:
         openapi: GeneratorData,
         meta: MetaType,
         config: Config,
-        custom_template_path: Optional[Path] = None,
+        custom_template_path: Path | None = None,
         file_encoding: str = "utf-8",
     ) -> None:
         self.openapi: GeneratorData = openapi
@@ -102,7 +103,7 @@ class Project:
             openapi=self.openapi,
             endpoint_collections_by_tag=self.openapi.endpoint_collections_by_tag,
         )
-        self.errors: List[GeneratorError] = []
+        self.errors: list[GeneratorError] = []
 
     def build(self) -> Sequence[GeneratorError]:
         """Create the project from templates"""
@@ -140,7 +141,7 @@ class Project:
             self._run_command(command)
 
     def _run_command(self, cmd: str) -> None:
-        cmd_name = cmd.split(" ")[0]
+        cmd_name = cmd.split(" ", maxsplit=1)[0]
         command_exists = shutil.which(cmd_name)
         if not command_exists:
             self.errors.append(
@@ -161,8 +162,8 @@ class Project:
                 )
             )
 
-    def _get_errors(self) -> List[GeneratorError]:
-        errors: List[GeneratorError] = []
+    def _get_errors(self) -> list[GeneratorError]:
+        errors: list[GeneratorError] = []
         for collection in self.openapi.endpoint_collections_by_tag.values():
             errors.extend(collection.parse_errors)
         errors.extend(self.openapi.errors)
@@ -317,13 +318,13 @@ class Project:
 
 
 def _get_project_for_url_or_path(
-    url: Optional[str],
-    path: Optional[Path],
+    url: str | None,
+    path: Path | None,
     meta: MetaType,
     config: Config,
-    custom_template_path: Optional[Path] = None,
+    custom_template_path: Path | None = None,
     file_encoding: str = "utf-8",
-) -> Union[Project, GeneratorError]:
+) -> Project | GeneratorError:
     data_dict = _get_document(url=url, path=path, timeout=config.http_timeout)
     if isinstance(data_dict, GeneratorError):
         return data_dict
@@ -341,11 +342,11 @@ def _get_project_for_url_or_path(
 
 def create_new_client(
     *,
-    url: Optional[str],
-    path: Optional[Path],
+    url: str | None,
+    path: Path | None,
     meta: MetaType,
     config: Config,
-    custom_template_path: Optional[Path] = None,
+    custom_template_path: Path | None = None,
     file_encoding: str = "utf-8",
 ) -> Sequence[GeneratorError]:
     """
@@ -369,11 +370,11 @@ def create_new_client(
 
 def update_existing_client(
     *,
-    url: Optional[str],
-    path: Optional[Path],
+    url: str | None,
+    path: Path | None,
     meta: MetaType,
     config: Config,
-    custom_template_path: Optional[Path] = None,
+    custom_template_path: Path | None = None,
     file_encoding: str = "utf-8",
 ) -> Sequence[GeneratorError]:
     """
@@ -395,7 +396,7 @@ def update_existing_client(
     return project.update()
 
 
-def _load_yaml_or_json(data: bytes, content_type: Optional[str]) -> Union[Dict[str, Any], GeneratorError]:
+def _load_yaml_or_json(data: bytes, content_type: str | None) -> dict[str, Any] | GeneratorError:
     if content_type == "application/json":
         try:
             return json.loads(data.decode())
@@ -408,9 +409,9 @@ def _load_yaml_or_json(data: bytes, content_type: Optional[str]) -> Union[Dict[s
             return GeneratorError(header=f"Invalid YAML from provided source: {err}")
 
 
-def _get_document(*, url: Optional[str], path: Optional[Path], timeout: int) -> Union[Dict[str, Any], GeneratorError]:
+def _get_document(*, url: str | None, path: Path | None, timeout: int) -> dict[str, Any] | GeneratorError:
     yaml_bytes: bytes
-    content_type: Optional[str]
+    content_type: str | None
     if url is not None and path is not None:
         return GeneratorError(header="Provide URL or Path, not both.")
     if url is not None:

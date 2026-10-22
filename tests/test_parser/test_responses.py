@@ -12,7 +12,7 @@ MODULE_NAME = "openapi_python_client.parser.responses"
 def test_response_from_data_no_content(any_property_factory):
     from openapi_python_client.parser.responses import Response, response_from_data
 
-    response, schemas = response_from_data(
+    response, _schemas = response_from_data(
         status_code=200,
         data=oai.Response.model_construct(description=""),
         schemas=Schemas(),
@@ -36,7 +36,7 @@ def test_response_from_data_no_content(any_property_factory):
 def test_response_from_data_reference(any_property_factory):
     from openapi_python_client.parser.responses import Response, response_from_data
 
-    response, schemas = response_from_data(
+    response, _schemas = response_from_data(
         status_code=200,
         data=oai.Reference.model_construct(),
         schemas=Schemas(),
@@ -60,7 +60,7 @@ def test_response_from_data_unsupported_content_type():
     from openapi_python_client.parser.responses import response_from_data
 
     data = oai.Response.model_construct(description="", content={"blah": None})
-    response, schemas = response_from_data(
+    response, _schemas = response_from_data(
         status_code=200, data=data, schemas=Schemas(), parent_name="parent", config=MagicMock()
     )
 
@@ -73,7 +73,7 @@ def test_response_from_data_no_content_schema(any_property_factory):
     data = oai.Response.model_construct(
         description="", content={"application/vnd.api+json; version=2.2": oai.MediaType.model_construct()}
     )
-    response, schemas = response_from_data(
+    response, _schemas = response_from_data(
         status_code=200, data=data, schemas=Schemas(), parent_name="parent", config=MagicMock()
     )
 
@@ -99,7 +99,7 @@ def test_response_from_data_property_error(mocker):
     )
     config = MagicMock()
 
-    response, schemas = responses.response_from_data(
+    response, _schemas = responses.response_from_data(
         status_code=400, data=data, schemas=Schemas(), parent_name="parent", config=config
     )
 
@@ -129,7 +129,7 @@ def test_response_from_data_property(mocker, property_factory, content_type):
     )
     config = MagicMock()
 
-    response, schemas = responses.response_from_data(
+    response, _schemas = responses.response_from_data(
         status_code=400, data=data, schemas=Schemas(), parent_name="parent", config=config
     )
 

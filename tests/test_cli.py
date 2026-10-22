@@ -63,7 +63,7 @@ def test_bad_config(mocker, _create_new_client):
     result = runner.invoke(app, ["generate", f"--config={config_path}", f"--path={path}"])
 
     assert result.exit_code == 2  # noqa: PLR2004
-    assert "Unable to parse config" in result.stdout
+    assert "Unable to parse config" in result.output
     load_config.assert_called_once_with(path=Path(config_path))
     _create_new_client.assert_not_called()
 

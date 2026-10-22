@@ -1,14 +1,16 @@
-""" Utils for converting default values into valid Python """
+"""Utils for converting default values into valid Python"""
+
 __all__ = ["convert", "convert_chain"]
 
 import datetime
-from typing import Any, Callable, Dict, Iterable, Optional
+from collections.abc import Callable, Iterable
+from typing import Any
 
 from ... import utils
 from ..errors import ValidationError
 
 
-def convert(type_string: str, value: Any) -> Optional[Any]:
+def convert(type_string: str, value: Any) -> Any | None:
     """
     Used by properties to convert some value into a valid value for the type_string.
 
@@ -32,7 +34,7 @@ def convert(type_string: str, value: Any) -> Optional[Any]:
         raise ValidationError from err
 
 
-def convert_chain(type_strings: Iterable[str], value: Any) -> Optional[Any]:
+def convert_chain(type_strings: Iterable[str], value: Any) -> Any | None:
     """
     Used by properties which support multiple possible converters (Unions).
 
@@ -55,23 +57,23 @@ def convert_chain(type_strings: Iterable[str], value: Any) -> Optional[Any]:
     raise ValidationError()
 
 
-def _convert_string(value: Any) -> Optional[str]:
+def _convert_string(value: Any) -> str | None:
     if isinstance(value, str):
         value = utils.remove_string_escapes(value)
     return repr(value)
 
 
-def _convert_datetime(value: str) -> Optional[str]:
+def _convert_datetime(value: str) -> str | None:
     datetime.datetime.fromisoformat(value)  # Make sure it works
     return f"datetime.datetime.fromisoformat({value!r})"
 
 
-def _convert_date(value: str) -> Optional[str]:
+def _convert_date(value: str) -> str | None:
     datetime.date.fromisoformat(value)
     return f"datetime.date.fromisoformat({value!r})"
 
 
-_CONVERTERS: Dict[str, Callable[[Any], Optional[Any]]] = {
+_CONVERTERS: dict[str, Callable[[Any], Any | None]] = {
     "str": _convert_string,
     "datetime.datetime": _convert_datetime,
     "datetime.date": _convert_date,

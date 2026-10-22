@@ -1,4 +1,5 @@
-from typing import Any, Callable, Dict
+from collections.abc import Callable
+from typing import Any
 
 import pytest
 
@@ -262,7 +263,7 @@ def param_factory() -> Callable[..., Parameter]:
     return _factory
 
 
-def _common_kwargs(kwargs: Dict[str, Any]) -> Dict[str, Any]:
+def _common_kwargs(kwargs: dict[str, Any]) -> dict[str, Any]:
     kwargs = {
         "name": "test",
         "required": True,

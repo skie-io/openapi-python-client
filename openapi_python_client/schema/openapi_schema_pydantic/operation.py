@@ -1,14 +1,8 @@
-from typing import Dict, List, Optional, Union
-
 from pydantic import BaseModel, ConfigDict
 
 from .callback import Callback
 from .external_documentation import ExternalDocumentation
-from .header import Header  # noqa: F401
 from .parameter import Parameter
-
-# Required to update forward ref after object creation, as this is not imported yet
-from .path_item import PathItem  # noqa: F401
 from .reference import Reference
 from .request_body import RequestBody
 from .responses import Responses
@@ -24,20 +18,22 @@ class Operation(BaseModel):
         - https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#operationObject
     """
 
-    tags: Optional[List[str]] = None
-    summary: Optional[str] = None
-    description: Optional[str] = None
-    externalDocs: Optional[ExternalDocumentation] = None
-    operationId: Optional[str] = None
-    parameters: Optional[List[Union[Parameter, Reference]]] = None
-    requestBody: Optional[Union[RequestBody, Reference]] = None
+    tags: list[str] | None = None
+    summary: str | None = None
+    description: str | None = None
+    externalDocs: ExternalDocumentation | None = None
+    operationId: str | None = None
+    parameters: list[Parameter | Reference] | None = None
+    requestBody: RequestBody | Reference | None = None
     responses: Responses
-    callbacks: Optional[Dict[str, Callback]] = None
+    callbacks: dict[str, Callback] | None = None
 
     deprecated: bool = False
-    security: Optional[List[SecurityRequirement]] = None
-    servers: Optional[List[Server]] = None
+    security: list[SecurityRequirement] | None = None
+    servers: list[Server] | None = None
     model_config = ConfigDict(
+        # `Callback` contains an unresolvable forward reference, will rebuild in `__init__.py`:
+        defer_build=True,
         extra="allow",
         json_schema_extra={
             "examples": [
@@ -83,7 +79,3 @@ class Operation(BaseModel):
             ]
         },
     )
-
-
-# PathItem in Callback uses Operation, so we need to update forward refs due to circular dependency
-Operation.model_rebuild()

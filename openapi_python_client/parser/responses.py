@@ -1,7 +1,6 @@
 __all__ = ["Response", "response_from_data"]
 
 from http import HTTPStatus
-from typing import Optional, Tuple, Union
 
 from attrs import define
 
@@ -23,7 +22,7 @@ class Response:
     source: str
 
 
-def _source_by_content_type(content_type: str) -> Optional[str]:
+def _source_by_content_type(content_type: str) -> str | None:
     content_type = utils.get_content_type(content_type)
 
     known_content_types = {
@@ -40,9 +39,7 @@ def _source_by_content_type(content_type: str) -> Optional[str]:
     return source
 
 
-def empty_response(
-    *, status_code: HTTPStatus, response_name: str, config: Config, description: Optional[str]
-) -> Response:
+def empty_response(*, status_code: HTTPStatus, response_name: str, config: Config, description: str | None) -> Response:
     """Return an untyped response, for when no response type is defined"""
     return Response(
         status_code=status_code,
@@ -62,11 +59,11 @@ def empty_response(
 def response_from_data(
     *,
     status_code: HTTPStatus,
-    data: Union[oai.Response, oai.Reference],
+    data: oai.Response | oai.Reference,
     schemas: Schemas,
     parent_name: str,
     config: Config,
-) -> Tuple[Union[Response, ParseError], Schemas]:
+) -> tuple[Response | ParseError, Schemas]:
     """Generate a Response from the OpenAPI dictionary representation of it"""
 
     response_name = f"response_{status_code}"

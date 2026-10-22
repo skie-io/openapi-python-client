@@ -1,4 +1,5 @@
-""" Regenerate golden-record """
+"""Regenerate golden-record"""
+
 import filecmp
 import os
 import shutil

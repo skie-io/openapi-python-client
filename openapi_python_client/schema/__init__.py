@@ -1,12 +1,11 @@
 __all__ = [
+    "DataType",
     "MediaType",
     "OpenAPI",
     "Operation",
     "Parameter",
     "ParameterLocation",
-    "DataType",
     "PathItem",
-    "Parameter",
     "Reference",
     "RequestBody",
     "Response",

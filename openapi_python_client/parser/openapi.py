@@ -1,9 +1,10 @@
 import re
 from collections import OrderedDict
+from collections.abc import Iterator
 from copy import deepcopy
 from dataclasses import dataclass, field
 from http import HTTPStatus
-from typing import Any, Dict, Iterator, List, Optional, Set, Tuple, Union
+from typing import Any, Union
 
 import attr
 from pydantic import ValidationError
@@ -42,21 +43,21 @@ class EndpointCollection:
     """A bunch of endpoints grouped under a tag that will become a module"""
 
     tag: str
-    endpoints: List["Endpoint"] = field(default_factory=list)
-    parse_errors: List[ParseError] = field(default_factory=list)
+    endpoints: list["Endpoint"] = field(default_factory=list)
+    parse_errors: list[ParseError] = field(default_factory=list)
 
     @staticmethod
     def from_data(
-        *, data: Dict[str, oai.PathItem], schemas: Schemas, parameters: Parameters, config: Config
-    ) -> Tuple[Dict[utils.PythonIdentifier, "EndpointCollection"], Schemas, Parameters]:
+        *, data: dict[str, oai.PathItem], schemas: Schemas, parameters: Parameters, config: Config
+    ) -> tuple[dict[utils.PythonIdentifier, "EndpointCollection"], Schemas, Parameters]:
         """Parse the openapi paths data to get EndpointCollections by tag"""
-        endpoints_by_tag: Dict[utils.PythonIdentifier, EndpointCollection] = {}
+        endpoints_by_tag: dict[utils.PythonIdentifier, EndpointCollection] = {}
 
         methods = ["get", "put", "post", "delete", "options", "head", "patch", "trace"]
 
         for path, path_data in data.items():
             for method in methods:
-                operation: Optional[oai.Operation] = getattr(path_data, method)
+                operation: oai.Operation | None = getattr(path_data, method)
                 if operation is None:
                     continue
                 tag = utils.PythonIdentifier(value=(operation.tags or ["default"])[0], prefix="tag")
@@ -112,31 +113,31 @@ class Endpoint:
 
     path: str
     method: str
-    description: Optional[str]
+    description: str | None
     name: str
     requires_security: bool
     tag: str
-    summary: Optional[str] = ""
-    relative_imports: Set[str] = field(default_factory=set)
-    query_parameters: Dict[str, Property] = field(default_factory=dict)
+    summary: str | None = ""
+    relative_imports: set[str] = field(default_factory=set)
+    query_parameters: dict[str, Property] = field(default_factory=dict)
     path_parameters: "OrderedDict[str, Property]" = field(default_factory=OrderedDict)
-    header_parameters: Dict[str, Property] = field(default_factory=dict)
-    cookie_parameters: Dict[str, Property] = field(default_factory=dict)
-    responses: List[Response] = field(default_factory=list)
-    form_body: Optional[Property] = None
-    json_body: Optional[Property] = None
-    multipart_body: Optional[Property] = None
-    errors: List[ParseError] = field(default_factory=list)
-    used_python_identifiers: Set[PythonIdentifier] = field(default_factory=set)
+    header_parameters: dict[str, Property] = field(default_factory=dict)
+    cookie_parameters: dict[str, Property] = field(default_factory=dict)
+    responses: list[Response] = field(default_factory=list)
+    form_body: Property | None = None
+    json_body: Property | None = None
+    multipart_body: Property | None = None
+    errors: list[ParseError] = field(default_factory=list)
+    used_python_identifiers: set[PythonIdentifier] = field(default_factory=set)
 
     paginated: bool = False
-    paginated_model: Optional[ModelProperty] = None
-    paginated_data_model: Optional[ListProperty[Any]] = None
+    paginated_model: ModelProperty | None = None
+    paginated_data_model: ListProperty[Any] | None = None
 
     @staticmethod
     def parse_request_form_body(
         *, body: oai.RequestBody, schemas: Schemas, parent_name: str, config: Config
-    ) -> Tuple[Union[Property, PropertyError, None], Schemas]:
+    ) -> tuple[Property | PropertyError | None, Schemas]:
         """Return form_body and updated schemas"""
         body_content = body.content
         form_body = body_content.get("application/x-www-form-urlencoded")
@@ -157,7 +158,7 @@ class Endpoint:
     @staticmethod
     def parse_multipart_body(
         *, body: oai.RequestBody, schemas: Schemas, parent_name: str, config: Config
-    ) -> Tuple[Union[Property, PropertyError, None], Schemas]:
+    ) -> tuple[Property | PropertyError | None, Schemas]:
         """Return multipart_body"""
         body_content = body.content
         multipart_body = body_content.get("multipart/form-data")
@@ -179,7 +180,7 @@ class Endpoint:
     @staticmethod
     def parse_request_json_body(
         *, body: oai.RequestBody, schemas: Schemas, parent_name: str, config: Config
-    ) -> Tuple[Union[Property, PropertyError, None], Schemas]:
+    ) -> tuple[Property | PropertyError | None, Schemas]:
         """Return json_body"""
         json_body = None
         for content_type, schema in body.content.items():
@@ -211,7 +212,7 @@ class Endpoint:
         data: oai.Operation,
         schemas: Schemas,
         config: Config,
-    ) -> Tuple[Union[ParseError, "Endpoint"], Schemas]:
+    ) -> tuple[Union[ParseError, "Endpoint"], Schemas]:
         """Adds form or JSON body to Endpoint if included in data"""
         endpoint = deepcopy(endpoint)
         if data.requestBody is None or isinstance(data.requestBody, oai.Reference):
@@ -275,7 +276,7 @@ class Endpoint:
     @staticmethod
     def _add_responses(
         *, endpoint: "Endpoint", data: oai.Responses, schemas: Schemas, config: Config
-    ) -> Tuple["Endpoint", Schemas]:
+    ) -> tuple["Endpoint", Schemas]:
         endpoint = deepcopy(endpoint)
         for code, response_data in data.items():
             status_code: HTTPStatus
@@ -319,11 +320,11 @@ class Endpoint:
     def add_parameters(  # noqa: PLR0911, PLR0912
         *,
         endpoint: "Endpoint",
-        data: Union[oai.Operation, oai.PathItem],
+        data: oai.Operation | oai.PathItem,
         schemas: Schemas,
         parameters: Parameters,
         config: Config,
-    ) -> Tuple[Union["Endpoint", ParseError], Schemas, Parameters]:
+    ) -> tuple[Union["Endpoint", ParseError], Schemas, Parameters]:
         """Process the defined `parameters` for an Endpoint.
 
         Any existing parameters will be ignored, so earlier instances of a parameter take precedence. PathItem
@@ -352,8 +353,8 @@ class Endpoint:
 
         endpoint = deepcopy(endpoint)
 
-        unique_parameters: Set[Tuple[str, oai.ParameterLocation]] = set()
-        parameters_by_location: Dict[str, Dict[str, Property]] = {
+        unique_parameters: set[tuple[str, oai.ParameterLocation]] = set()
+        parameters_by_location: dict[str, dict[str, Property]] = {
             oai.ParameterLocation.QUERY: endpoint.query_parameters,
             oai.ParameterLocation.PATH: endpoint.path_parameters,
             oai.ParameterLocation.HEADER: endpoint.header_parameters,
@@ -496,7 +497,7 @@ class Endpoint:
         schemas: Schemas,
         parameters: Parameters,
         config: Config,
-    ) -> Tuple[Union["Endpoint", ParseError], Schemas, Parameters]:
+    ) -> tuple[Union["Endpoint", ParseError], Schemas, Parameters]:
         """Construct an endpoint from the OpenAPI data"""
 
         if data.operationId is None:
@@ -547,11 +548,11 @@ class Endpoint:
         if self.json_body:
             yield self.json_body
 
-    def list_all_parameters(self) -> List[Property]:
+    def list_all_parameters(self) -> list[Property]:
         """Return a List of all the parameters of this endpoint"""
         return list(self.iter_all_parameters())
 
-    def _get_model_for_http_status(self, status: HTTPStatus) -> Optional[ModelProperty]:
+    def _get_model_for_http_status(self, status: HTTPStatus) -> ModelProperty | None:
         for response in self.responses:
             if response.status_code == status and isinstance(response.prop, ModelProperty):
                 return response.prop
@@ -592,15 +593,15 @@ class GeneratorData:
     """All the data needed to generate a client"""
 
     title: str
-    description: Optional[str]
+    description: str | None
     version: str
     models: Iterator[ModelProperty]
-    errors: List[ParseError]
-    endpoint_collections_by_tag: Dict[utils.PythonIdentifier, EndpointCollection]
+    errors: list[ParseError]
+    endpoint_collections_by_tag: dict[utils.PythonIdentifier, EndpointCollection]
     enums: Iterator[EnumProperty]
 
     @staticmethod
-    def from_dict(data: Dict[str, Any], *, config: Config) -> Union["GeneratorData", GeneratorError]:
+    def from_dict(data: dict[str, Any], *, config: Config) -> Union["GeneratorData", GeneratorError]:
         """Create an OpenAPI from dict"""
         try:
             openapi = oai.OpenAPI.model_validate(data)

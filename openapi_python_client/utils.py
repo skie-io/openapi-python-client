@@ -2,7 +2,7 @@ import builtins
 import re
 from email.message import Message
 from keyword import iskeyword
-from typing import Any, List
+from typing import Any
 
 DELIMITERS = r"\. _-"
 MSGPACK_CONTENT_TYPES = ("application/msgpack", "application/x-msgpack", "application/vnd.msgpack")
@@ -42,7 +42,7 @@ def sanitize(value: str) -> str:
     return re.sub(rf"[^\w{DELIMITERS}]+", "", value)
 
 
-def split_words(value: str) -> List[str]:
+def split_words(value: str) -> list[str]:
     """Split a string on words and known delimiters"""
     # We can't guess words if there is no capital letter
     if any(c.isupper() for c in value):

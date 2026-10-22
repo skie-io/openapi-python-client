@@ -1,9 +1,7 @@
-from typing import Dict, Union
-
 from .reference import Reference
 from .response import Response
 
-Responses = Dict[str, Union[Response, Reference]]
+Responses = dict[str, Response | Reference]
 """
 A container for the expected responses of an operation.
 The container maps a HTTP response code to the expected response.

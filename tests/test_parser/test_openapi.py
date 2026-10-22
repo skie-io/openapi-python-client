@@ -408,7 +408,7 @@ class TestEndpoint:
         endpoint = self.make_endpoint()
         initial_schemas = mocker.MagicMock()
 
-        (endpoint, response_schemas) = Endpoint._add_body(
+        endpoint, response_schemas = Endpoint._add_body(
             endpoint=endpoint,
             data=oai.Operation.model_construct(requestBody=request_body),
             schemas=initial_schemas,
@@ -755,7 +755,7 @@ class TestEndpoint:
         )
 
         parameters = Parameters()
-        (error, _, return_parameters) = endpoint.add_parameters(
+        error, _, return_parameters = endpoint.add_parameters(
             endpoint=endpoint, data=data, schemas=Schemas(), parameters=parameters, config=Config()
         )
 
@@ -778,7 +778,7 @@ class TestEndpoint:
         }
         parameters.classes_by_reference = {"components/parameters/blah": new_param}
 
-        (endpoint, _, return_parameters) = endpoint.add_parameters(
+        endpoint, _, return_parameters = endpoint.add_parameters(
             endpoint=endpoint, data=data, schemas=Schemas(), parameters=parameters, config=Config()
         )
 
@@ -797,7 +797,7 @@ class TestEndpoint:
             ]
         )
 
-        (endpoint, _, _) = endpoint.add_parameters(
+        endpoint, _, _ = endpoint.add_parameters(
             endpoint=endpoint, data=data, schemas=Schemas(), parameters=Parameters(), config=Config()
         )
 
@@ -828,7 +828,7 @@ class TestEndpoint:
             ]
         )
 
-        (err, _, _) = endpoint.add_parameters(
+        err, _, _ = endpoint.add_parameters(
             endpoint=endpoint, data=data, schemas=Schemas(), parameters=Parameters(), config=Config()
         )
 
@@ -866,7 +866,7 @@ class TestEndpoint:
             ]
         )
 
-        (endpoint, _, _) = endpoint.add_parameters(
+        endpoint, _, _ = endpoint.add_parameters(
             endpoint=endpoint, data=data, schemas=Schemas(), parameters=Parameters(), config=Config()
         )
 
@@ -1128,7 +1128,7 @@ class TestEndpoint:
         config = MagicMock()
         parameters = mocker.MagicMock()
 
-        endpoint, return_schemas, return_params = Endpoint.from_data(
+        endpoint, return_schemas, _return_params = Endpoint.from_data(
             data=data, path=path, method=method, tag="default", schemas=schemas, parameters=parameters, config=config
         )
 
@@ -1340,7 +1340,7 @@ class TestEndpointCollection:
             )
         }
 
-        collections, schemas, parameters = EndpointCollection.from_data(
+        collections, _schemas, _parameters = EndpointCollection.from_data(
             data=data,
             schemas=Schemas(),
             parameters=Parameters(),
@@ -1378,7 +1378,7 @@ class TestEndpointCollection:
         parameters = mocker.MagicMock()
         config = MagicMock()
 
-        result, result_schemas, result_parameters = EndpointCollection.from_data(
+        result, result_schemas, _result_parameters = EndpointCollection.from_data(
             data=data, schemas=schemas, config=config, parameters=parameters
         )
 

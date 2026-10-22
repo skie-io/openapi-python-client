@@ -1,1 +1,1 @@
-""" Generate a complete client and verify that it is correct """
+"""Generate a complete client and verify that it is correct"""

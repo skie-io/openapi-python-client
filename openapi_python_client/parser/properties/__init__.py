@@ -6,13 +6,14 @@ __all__ = [
     "Parameters",
     "Property",
     "Schemas",
-    "build_schemas",
     "build_parameters",
+    "build_schemas",
     "property_from_data",
 ]
 
+from collections.abc import Iterable
 from itertools import chain
-from typing import Any, ClassVar, Dict, Generic, Iterable, List, Optional, Set, Tuple, TypeVar, Union
+from typing import Any, ClassVar, Generic, TypeVar
 
 from attrs import define, evolve
 
@@ -54,11 +55,11 @@ class NoneProperty(Property):
 class StringProperty(Property):
     """A property of type str"""
 
-    max_length: Optional[int] = None
-    pattern: Optional[str] = None
+    max_length: int | None = None
+    pattern: str | None = None
     _type_string: ClassVar[str] = "str"
     _json_type_string: ClassVar[str] = "str"
-    _allowed_locations: ClassVar[Set[oai.ParameterLocation]] = {
+    _allowed_locations: ClassVar[set[oai.ParameterLocation]] = {
         oai.ParameterLocation.QUERY,
         oai.ParameterLocation.PATH,
         oai.ParameterLocation.COOKIE,
@@ -76,7 +77,7 @@ class DateTimeProperty(Property):
     _json_type_string: ClassVar[str] = "datetime.datetime"
     template: ClassVar[str] = "datetime_property.py.jinja"
 
-    def get_imports(self, *, prefix: str) -> Set[str]:
+    def get_imports(self, *, prefix: str) -> set[str]:
         """
         Get a set of import strings that should be included when this property is used somewhere
 
@@ -97,7 +98,7 @@ class DateProperty(Property):
     _json_type_string: ClassVar[str] = "datetime.date"
     template: ClassVar[str] = "date_property.py.jinja"
 
-    def get_imports(self, *, prefix: str) -> Set[str]:
+    def get_imports(self, *, prefix: str) -> set[str]:
         """
         Get a set of import strings that should be included when this property is used somewhere
 
@@ -119,7 +120,7 @@ class FileProperty(Property):
     _json_type_string: ClassVar[str] = "FileJsonType"
     template: ClassVar[str] = "file_property.py.jinja"
 
-    def get_imports(self, *, prefix: str) -> Set[str]:
+    def get_imports(self, *, prefix: str) -> set[str]:
         """
         Get a set of import strings that should be included when this property is used somewhere
 
@@ -138,7 +139,7 @@ class FloatProperty(Property):
 
     _type_string: ClassVar[str] = "float"
     _json_type_string: ClassVar[str] = "float"
-    _allowed_locations: ClassVar[Set[oai.ParameterLocation]] = {
+    _allowed_locations: ClassVar[set[oai.ParameterLocation]] = {
         oai.ParameterLocation.QUERY,
         oai.ParameterLocation.PATH,
         oai.ParameterLocation.COOKIE,
@@ -153,7 +154,7 @@ class IntProperty(Property):
 
     _type_string: ClassVar[str] = "int"
     _json_type_string: ClassVar[str] = "int"
-    _allowed_locations: ClassVar[Set[oai.ParameterLocation]] = {
+    _allowed_locations: ClassVar[set[oai.ParameterLocation]] = {
         oai.ParameterLocation.QUERY,
         oai.ParameterLocation.PATH,
         oai.ParameterLocation.COOKIE,
@@ -168,7 +169,7 @@ class BooleanProperty(Property):
 
     _type_string: ClassVar[str] = "bool"
     _json_type_string: ClassVar[str] = "bool"
-    _allowed_locations: ClassVar[Set[oai.ParameterLocation]] = {
+    _allowed_locations: ClassVar[set[oai.ParameterLocation]] = {
         oai.ParameterLocation.QUERY,
         oai.ParameterLocation.PATH,
         oai.ParameterLocation.COOKIE,
@@ -197,7 +198,7 @@ class ListProperty(Property, Generic[InnerProp]):
         """Get a string representation of runtime type that should be used for `isinstance` checks"""
         return "list"
 
-    def get_imports(self, *, prefix: str) -> Set[str]:
+    def get_imports(self, *, prefix: str) -> set[str]:
         """
         Get a set of import strings that should be included when this property is used somewhere
 
@@ -210,7 +211,7 @@ class ListProperty(Property, Generic[InnerProp]):
         imports.add("from typing import cast, List")
         return imports
 
-    def get_lazy_imports(self, *, prefix: str) -> Set[str]:
+    def get_lazy_imports(self, *, prefix: str) -> set[str]:
         lazy_imports = super().get_lazy_imports(prefix=prefix)
         lazy_imports.update(self.inner_property.get_lazy_imports(prefix=prefix))
         return lazy_imports
@@ -220,16 +221,16 @@ class ListProperty(Property, Generic[InnerProp]):
 class UnionProperty(Property):
     """A property representing a Union (anyOf) of other properties"""
 
-    inner_properties: List[Property]
+    inner_properties: list[Property]
     template: ClassVar[str] = "union_property.py.jinja"
 
-    def _get_inner_type_strings(self, json: bool = False) -> Set[str]:
+    def _get_inner_type_strings(self, json: bool = False) -> set[str]:
         return {
             p.get_type_string(no_optional=True, json=json, quoted=not p.is_base_type) for p in self.inner_properties
         }
 
     @staticmethod
-    def _get_type_string_from_inner_type_strings(inner_types: Set[str]) -> str:
+    def _get_type_string_from_inner_type_strings(inner_types: set[str]) -> str:
         if len(inner_types) == 1:
             return inner_types.pop()
         return f"Union[{', '.join(sorted(inner_types))}]"
@@ -240,7 +241,7 @@ class UnionProperty(Property):
     def get_base_json_type_string(self, *, quoted: bool = False) -> str:
         return self._get_type_string_from_inner_type_strings(self._get_inner_type_strings(json=True))
 
-    def get_type_strings_in_union(self, no_optional: bool = False, json: bool = False) -> Set[str]:
+    def get_type_strings_in_union(self, no_optional: bool = False, json: bool = False) -> set[str]:
         """
         Get the set of all the types that should appear within the `Union` representing this property.
 
@@ -277,7 +278,7 @@ class UnionProperty(Property):
         type_strings_in_union = self.get_type_strings_in_union(no_optional=no_optional, json=json)
         return self._get_type_string_from_inner_type_strings(type_strings_in_union)
 
-    def get_imports(self, *, prefix: str) -> Set[str]:
+    def get_imports(self, *, prefix: str) -> set[str]:
         """
         Get a set of import strings that should be included when this property is used somewhere
 
@@ -291,7 +292,7 @@ class UnionProperty(Property):
         imports.add("from typing import cast, Union")
         return imports
 
-    def get_lazy_imports(self, *, prefix: str) -> Set[str]:
+    def get_lazy_imports(self, *, prefix: str) -> set[str]:
         lazy_imports = super().get_lazy_imports(prefix=prefix)
         for inner_prop in self.inner_properties:
             lazy_imports.update(inner_prop.get_lazy_imports(prefix=prefix))
@@ -300,7 +301,7 @@ class UnionProperty(Property):
 
 def _string_based_property(
     name: str, required: bool, data: oai.Schema, config: Config
-) -> Union[StringProperty, DateProperty, DateTimeProperty, FileProperty]:
+) -> StringProperty | DateProperty | DateTimeProperty | FileProperty:
     """Construct a Property from the type "string" """
     string_format = data.schema_format
     python_name = utils.PythonIdentifier(value=name, prefix=config.field_prefix)
@@ -352,10 +353,10 @@ def build_enum_property(
     name: str,
     required: bool,
     schemas: Schemas,
-    enum: Union[List[Optional[str]], List[Optional[int]]],
-    parent_name: Optional[str],
+    enum: list[str | None] | list[int | None],
+    parent_name: str | None,
     config: Config,
-) -> Tuple[Union[EnumProperty, NoneProperty, PropertyError], Schemas]:
+) -> tuple[EnumProperty | NoneProperty | PropertyError, Schemas]:
     """
     Create an EnumProperty from schema data.
 
@@ -383,7 +384,7 @@ def build_enum_property(
     # OpenAPI allows for null as an enum value, but it doesn't make sense with how enums are constructed in Python.
     # So instead, if null is a possible value, make the property nullable.
     # Mypy is not smart enough to know that the type is right though
-    value_list: Union[List[str], List[int]] = [value for value in enum if value is not None]  # type: ignore
+    value_list: list[str] | list[int] = [value for value in enum if value is not None]  # type: ignore
     if len(value_list) < len(enum):
         data.nullable = True
 
@@ -437,7 +438,7 @@ def build_enum_property(
     return prop, schemas
 
 
-def get_enum_default(prop: EnumProperty, data: oai.Schema) -> Union[Optional[str], PropertyError]:
+def get_enum_default(prop: EnumProperty, data: oai.Schema) -> str | PropertyError | None:
     """
     Run through the available values in an EnumProperty and return the string representing the default value
     in `data`.
@@ -464,7 +465,7 @@ def get_enum_default(prop: EnumProperty, data: oai.Schema) -> Union[Optional[str
 
 def build_union_property(
     *, data: oai.Schema, name: str, required: bool, schemas: Schemas, parent_name: str, config: Config
-) -> Tuple[Union[UnionProperty, PropertyError], Schemas]:
+) -> tuple[UnionProperty | PropertyError, Schemas]:
     """
     Create a `UnionProperty` the right way.
 
@@ -480,7 +481,7 @@ def build_union_property(
         `(result, schemas)` where `schemas` is the updated version of the input `schemas` and `result` is the
             constructed `UnionProperty` or a `PropertyError` describing what went wrong.
     """
-    sub_properties: List[Property] = []
+    sub_properties: list[Property] = []
 
     for i, sub_prop_data in enumerate(chain(data.anyOf, data.oneOf)):
         sub_prop, schemas = property_from_data(
@@ -520,8 +521,8 @@ def build_list_property(
     parent_name: str,
     config: Config,
     process_properties: bool,
-    roots: Set[Union[ReferencePath, utils.ClassName]],
-) -> Tuple[Union[ListProperty[Any], PropertyError], Schemas]:
+    roots: set[ReferencePath | utils.ClassName],
+) -> tuple[ListProperty[Any] | PropertyError, Schemas]:
     """
     Build a ListProperty the right way, use this instead of the normal constructor.
 
@@ -570,12 +571,12 @@ def build_list_property(
 def _property_from_ref(
     name: str,
     required: bool,
-    parent: Union[oai.Schema, None],
+    parent: oai.Schema | None,
     data: oai.Reference,
     schemas: Schemas,
     config: Config,
-    roots: Set[Union[ReferencePath, utils.ClassName]],
-) -> Tuple[Union[Property, PropertyError], Schemas]:
+    roots: set[ReferencePath | utils.ClassName],
+) -> tuple[Property | PropertyError, Schemas]:
     ref_path = parse_reference_path(data.ref)
     if isinstance(ref_path, ParseError):
         return PropertyError(data=data, detail=ref_path.detail), schemas
@@ -604,13 +605,13 @@ def _property_from_ref(
 def _property_from_data(  # noqa: PLR0911
     name: str,
     required: bool,
-    data: Union[oai.Reference, oai.Schema],
+    data: oai.Reference | oai.Schema,
     schemas: Schemas,
     parent_name: str,
     config: Config,
     process_properties: bool,
-    roots: Set[Union[ReferencePath, utils.ClassName]],
-) -> Tuple[Union[Property, PropertyError], Schemas]:
+    roots: set[ReferencePath | utils.ClassName],
+) -> tuple[Property | PropertyError, Schemas]:
     """Generate a Property from the OpenAPI dictionary representation of it"""
     name = utils.remove_string_escapes(name)
     if isinstance(data, oai.Reference):
@@ -618,7 +619,7 @@ def _property_from_data(  # noqa: PLR0911
             name=name, required=required, parent=None, data=data, schemas=schemas, config=config, roots=roots
         )
 
-    sub_data: List[Union[oai.Schema, oai.Reference]] = data.allOf + data.anyOf + data.oneOf
+    sub_data: list[oai.Schema | oai.Reference] = data.allOf + data.anyOf + data.oneOf
     # A union of a single reference should just be passed through to that reference (don't create copy class)
     if len(sub_data) == 1 and isinstance(sub_data[0], oai.Reference):
         return _property_from_ref(
@@ -720,13 +721,13 @@ def property_from_data(
     *,
     name: str,
     required: bool,
-    data: Union[oai.Reference, oai.Schema],
+    data: oai.Reference | oai.Schema,
     schemas: Schemas,
     parent_name: str,
     config: Config,
     process_properties: bool = True,
-    roots: Optional[Set[Union[ReferencePath, utils.ClassName]]] = None,
-) -> Tuple[Union[Property, PropertyError], Schemas]:
+    roots: set[ReferencePath | utils.ClassName] | None = None,
+) -> tuple[Property | PropertyError, Schemas]:
     """
     Build a Property from an OpenAPI schema or reference. This Property represents a single input or output for a
     generated API operation.
@@ -769,12 +770,10 @@ def property_from_data(
         return PropertyError(detail="Failed to validate default value", data=data), schemas
 
 
-def _create_schemas(
-    *, components: Dict[str, Union[oai.Reference, oai.Schema]], schemas: Schemas, config: Config
-) -> Schemas:
-    to_process: Iterable[Tuple[str, Union[oai.Reference, oai.Schema]]] = components.items()
+def _create_schemas(*, components: dict[str, oai.Reference | oai.Schema], schemas: Schemas, config: Config) -> Schemas:
+    to_process: Iterable[tuple[str, oai.Reference | oai.Schema]] = components.items()
     still_making_progress = True
-    errors: List[PropertyError] = []
+    errors: list[PropertyError] = []
 
     # References could have forward References so keep going as long as we are making progress
     while still_making_progress:
@@ -803,7 +802,7 @@ def _create_schemas(
     return schemas
 
 
-def _propogate_removal(*, root: Union[ReferencePath, utils.ClassName], schemas: Schemas, error: PropertyError) -> None:
+def _propogate_removal(*, root: ReferencePath | utils.ClassName, schemas: Schemas, error: PropertyError) -> None:
     if isinstance(root, utils.ClassName):
         schemas.classes_by_name.pop(root, None)
         return
@@ -816,8 +815,8 @@ def _propogate_removal(*, root: Union[ReferencePath, utils.ClassName], schemas: 
 
 
 def _process_model_errors(
-    model_errors: List[Tuple[ModelProperty, PropertyError]], *, schemas: Schemas
-) -> List[PropertyError]:
+    model_errors: list[tuple[ModelProperty, PropertyError]], *, schemas: Schemas
+) -> list[PropertyError]:
     for model, error in model_errors:
         error.detail = error.detail or ""
         error.detail += "\n\nFailure to process schema has resulted in the removal of:"
@@ -829,8 +828,8 @@ def _process_model_errors(
 def _process_models(*, schemas: Schemas, config: Config) -> Schemas:
     to_process = (prop for prop in schemas.classes_by_name.values() if isinstance(prop, ModelProperty))
     still_making_progress = True
-    final_model_errors: List[Tuple[ModelProperty, PropertyError]] = []
-    latest_model_errors: List[Tuple[ModelProperty, PropertyError]] = []
+    final_model_errors: list[tuple[ModelProperty, PropertyError]] = []
+    latest_model_errors: list[tuple[ModelProperty, PropertyError]] = []
 
     # Models which refer to other models in their allOf must be processed after their referenced models
     while still_making_progress:
@@ -862,9 +861,7 @@ def _process_models(*, schemas: Schemas, config: Config) -> Schemas:
     return schemas
 
 
-def build_schemas(
-    *, components: Dict[str, Union[oai.Reference, oai.Schema]], schemas: Schemas, config: Config
-) -> Schemas:
+def build_schemas(*, components: dict[str, oai.Reference | oai.Schema], schemas: Schemas, config: Config) -> Schemas:
     """Get a list of Schemas from an OpenAPI dict"""
     schemas = _create_schemas(components=components, schemas=schemas, config=config)
     schemas = _process_models(schemas=schemas, config=config)
@@ -873,16 +870,16 @@ def build_schemas(
 
 def build_parameters(
     *,
-    components: Dict[str, Union[oai.Reference, oai.Parameter]],
+    components: dict[str, oai.Reference | oai.Parameter],
     parameters: Parameters,
     config: Config,
 ) -> Parameters:
     """Get a list of Parameters from an OpenAPI dict"""
-    to_process: Iterable[Tuple[str, Union[oai.Reference, oai.Parameter]]] = []
+    to_process: Iterable[tuple[str, oai.Reference | oai.Parameter]] = []
     if components is not None:
         to_process = components.items()
     still_making_progress = True
-    errors: List[ParameterError] = []
+    errors: list[ParameterError] = []
 
     # References could have forward References so keep going as long as we are making progress
     while still_making_progress:

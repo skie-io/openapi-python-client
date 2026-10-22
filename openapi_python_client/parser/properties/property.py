@@ -1,6 +1,6 @@
 __all__ = ["Property"]
 
-from typing import TYPE_CHECKING, ClassVar, Optional, Set
+from typing import TYPE_CHECKING, ClassVar
 
 from attrs import define, field
 
@@ -35,20 +35,20 @@ class Property:
     nullable: bool
     _type_string: ClassVar[str] = ""
     _json_type_string: ClassVar[str] = ""  # Type of the property after JSON serialization
-    _allowed_locations: ClassVar[Set[oai.ParameterLocation]] = {
+    _allowed_locations: ClassVar[set[oai.ParameterLocation]] = {
         oai.ParameterLocation.QUERY,
         oai.ParameterLocation.PATH,
         oai.ParameterLocation.COOKIE,
     }
-    default: Optional[str] = field()
+    default: str | None = field()
     python_name: PythonIdentifier
-    description: Optional[str] = field()
-    example: Optional[str] = field()
+    description: str | None = field()
+    example: str | None = field()
 
     template: ClassVar[str] = "any_property.py.jinja"
     json_is_dict: ClassVar[bool] = False
 
-    def validate_location(self, location: oai.ParameterLocation) -> Optional[ParseError]:
+    def validate_location(self, location: oai.ParameterLocation) -> ParseError | None:
         """Returns an error if this type of property is not allowed in the given location"""
         if location not in self._allowed_locations:
             return ParseError(detail=f"{self.get_type_string()} is not allowed in {location}")
@@ -106,7 +106,7 @@ class Property:
         return self.get_type_string(no_optional=True, quoted=False)
 
     # noinspection PyUnusedLocal
-    def get_imports(self, *, prefix: str) -> Set[str]:
+    def get_imports(self, *, prefix: str) -> set[str]:
         """
         Get a set of import strings that should be included when this property is used somewhere
 
@@ -122,7 +122,7 @@ class Property:
             imports.add(f"from {prefix}types import UNSET, Unset")
         return imports
 
-    def get_lazy_imports(self, *, prefix: str) -> Set[str]:
+    def get_lazy_imports(self, *, prefix: str) -> set[str]:
         """Get a set of lazy import strings that should be included when this property is used somewhere
 
         Args:
@@ -133,7 +133,7 @@ class Property:
 
     def to_string(self) -> str:
         """How this should be declared in a dataclass"""
-        default: Optional[str]
+        default: str | None
         if self.default is not None:
             default = self.default
         elif not self.required:

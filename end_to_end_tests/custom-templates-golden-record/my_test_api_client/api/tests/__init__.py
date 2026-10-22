@@ -1,4 +1,4 @@
-""" Contains methods for accessing the API Endpoints """
+"""Contains methods for accessing the API Endpoints"""
 
 import types
 
@@ -29,6 +29,7 @@ from . import (
 
 
 class TestsEndpoints:
+
     @classmethod
     def get_user_list(cls) -> types.ModuleType:
         """

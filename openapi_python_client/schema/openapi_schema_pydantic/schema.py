@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Union
 
 from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
 
@@ -20,41 +20,41 @@ class Schema(BaseModel):
         - https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#schemaObject
     """
 
-    title: Optional[str] = None
-    multipleOf: Optional[float] = Field(default=None, gt=0.0)
-    maximum: Optional[float] = None
-    exclusiveMaximum: Optional[bool] = None
-    minimum: Optional[float] = None
-    exclusiveMinimum: Optional[bool] = None
-    maxLength: Optional[int] = Field(default=None, ge=0)
-    minLength: Optional[int] = Field(default=None, ge=0)
-    pattern: Optional[str] = None
-    maxItems: Optional[int] = Field(default=None, ge=0)
-    minItems: Optional[int] = Field(default=None, ge=0)
-    uniqueItems: Optional[bool] = None
-    maxProperties: Optional[int] = Field(default=None, ge=0)
-    minProperties: Optional[int] = Field(default=None, ge=0)
-    required: Optional[List[str]] = Field(default=None, min_length=1)
-    enum: Union[None, List[Optional[StrictInt]], List[Optional[StrictStr]]] = Field(default=None, min_length=1)
-    type: Optional[DataType] = Field(default=None)
-    allOf: List[Union[Reference, "Schema"]] = Field(default_factory=list)
-    oneOf: List[Union[Reference, "Schema"]] = Field(default_factory=list)
-    anyOf: List[Union[Reference, "Schema"]] = Field(default_factory=list)
-    schema_not: Optional[Union[Reference, "Schema"]] = Field(default=None, alias="not")
-    items: Optional[Union[Reference, "Schema"]] = None
-    properties: Optional[Dict[str, Union[Reference, "Schema"]]] = None
-    additionalProperties: Optional[Union[bool, Reference, "Schema"]] = None
-    description: Optional[str] = None
-    schema_format: Optional[str] = Field(default=None, alias="format")
-    default: Optional[Any] = None
+    title: str | None = None
+    multipleOf: float | None = Field(default=None, gt=0.0)
+    maximum: float | None = None
+    exclusiveMaximum: bool | None = None
+    minimum: float | None = None
+    exclusiveMinimum: bool | None = None
+    maxLength: int | None = Field(default=None, ge=0)
+    minLength: int | None = Field(default=None, ge=0)
+    pattern: str | None = None
+    maxItems: int | None = Field(default=None, ge=0)
+    minItems: int | None = Field(default=None, ge=0)
+    uniqueItems: bool | None = None
+    maxProperties: int | None = Field(default=None, ge=0)
+    minProperties: int | None = Field(default=None, ge=0)
+    required: list[str] | None = Field(default=None, min_length=1)
+    enum: list[StrictInt | None] | list[StrictStr | None] | None = Field(default=None, min_length=1)
+    type: DataType | None = Field(default=None)
+    allOf: list[Union[Reference, "Schema"]] = Field(default_factory=list)
+    oneOf: list[Union[Reference, "Schema"]] = Field(default_factory=list)
+    anyOf: list[Union[Reference, "Schema"]] = Field(default_factory=list)
+    schema_not: Union[Reference, "Schema"] | None = Field(default=None, alias="not")
+    items: Union[Reference, "Schema"] | None = None
+    properties: dict[str, Union[Reference, "Schema"]] | None = None
+    additionalProperties: Union[bool, Reference, "Schema"] | None = None
+    description: str | None = None
+    schema_format: str | None = Field(default=None, alias="format")
+    default: Any | None = None
     nullable: bool = False
-    discriminator: Optional[Discriminator] = None
-    readOnly: Optional[bool] = None
-    writeOnly: Optional[bool] = None
-    xml: Optional[XML] = None
-    externalDocs: Optional[ExternalDocumentation] = None
-    example: Optional[Any] = None
-    deprecated: Optional[bool] = None
+    discriminator: Discriminator | None = None
+    readOnly: bool | None = None
+    writeOnly: bool | None = None
+    xml: XML | None = None
+    externalDocs: ExternalDocumentation | None = None
+    example: Any | None = None
+    deprecated: bool | None = None
     model_config = ConfigDict(
         extra="allow",
         populate_by_name=True,
@@ -140,6 +140,3 @@ class Schema(BaseModel):
             ]
         },
     )
-
-
-Schema.model_rebuild()

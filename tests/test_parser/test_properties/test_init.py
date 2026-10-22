@@ -1,4 +1,3 @@
-from typing import Type
 from unittest.mock import MagicMock, call
 
 import attr
@@ -473,7 +472,7 @@ class TestPropertyFromData:
 
         schemas = Schemas()
 
-        prop, new_schemas = property_from_data(
+        prop, _new_schemas = property_from_data(
             name=name, required=required, data=data, schemas=schemas, parent_name="parent", config=Config()
         )
 
@@ -679,7 +678,7 @@ class TestPropertyFromData:
             ("boolean", BooleanProperty, bool),
         ],
     )
-    def test_property_from_data_simple_types(self, openapi_type: str, prop_type: Type[Property], python_type):
+    def test_property_from_data_simple_types(self, openapi_type: str, prop_type: type[Property], python_type):
         from openapi_python_client.parser.properties import Schemas, property_from_data
 
         name = "test_prop"
@@ -1018,7 +1017,7 @@ class TestBuildUnionProperty:
 
         from openapi_python_client.parser.properties import Schemas, build_union_property
 
-        p, s = build_union_property(
+        p, _s = build_union_property(
             name=name, required=required, data=data, schemas=Schemas(), parent_name="parent", config=MagicMock()
         )
         assert p == PropertyError(detail=f"Invalid property in union {name}", data=reference)

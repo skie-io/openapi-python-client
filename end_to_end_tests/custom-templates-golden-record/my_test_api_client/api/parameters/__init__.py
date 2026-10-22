@@ -1,4 +1,4 @@
-""" Contains methods for accessing the API Endpoints """
+"""Contains methods for accessing the API Endpoints"""
 
 import types
 
@@ -11,6 +11,7 @@ from . import (
 
 
 class ParametersEndpoints:
+
     @classmethod
     def get_common_parameters_overriding_param(cls) -> types.ModuleType:
         """

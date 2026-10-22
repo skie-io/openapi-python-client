@@ -1,5 +1,3 @@
-from typing import Dict, Optional, Union
-
 from pydantic import BaseModel, ConfigDict
 
 from .callback import Callback
@@ -25,16 +23,18 @@ class Components(BaseModel):
         - https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#componentsObject
     """
 
-    schemas: Optional[Dict[str, Union[Schema, Reference]]] = None
-    responses: Optional[Dict[str, Union[Response, Reference]]] = None
-    parameters: Optional[Dict[str, Union[Parameter, Reference]]] = None
-    examples: Optional[Dict[str, Union[Example, Reference]]] = None
-    requestBodies: Optional[Dict[str, Union[RequestBody, Reference]]] = None
-    headers: Optional[Dict[str, Union[Header, Reference]]] = None
-    securitySchemes: Optional[Dict[str, Union[SecurityScheme, Reference]]] = None
-    links: Optional[Dict[str, Union[Link, Reference]]] = None
-    callbacks: Optional[Dict[str, Union[Callback, Reference]]] = None
+    schemas: dict[str, Schema | Reference] | None = None
+    responses: dict[str, Response | Reference] | None = None
+    parameters: dict[str, Parameter | Reference] | None = None
+    examples: dict[str, Example | Reference] | None = None
+    requestBodies: dict[str, RequestBody | Reference] | None = None
+    headers: dict[str, Header | Reference] | None = None
+    securitySchemes: dict[str, SecurityScheme | Reference] | None = None
+    links: dict[str, Link | Reference] | None = None
+    callbacks: dict[str, Callback | Reference] | None = None
     model_config = ConfigDict(
+        # `Callback` contains an unresolvable forward reference, will rebuild in `__init__.py`:
+        defer_build=True,
         extra="allow",
         json_schema_extra={
             "examples": [

@@ -1,7 +1,7 @@
 import codecs
 import pathlib
+from collections.abc import Sequence
 from pprint import pformat
-from typing import Optional, Sequence
 
 import typer
 
@@ -9,7 +9,7 @@ from openapi_python_client import MetaType
 from openapi_python_client.config import Config
 from openapi_python_client.parser.errors import ErrorLevel, GeneratorError, ParseError
 
-app = typer.Typer()
+app = typer.Typer(name="openapi-python-client")
 
 
 def _version_callback(value: bool) -> None:
@@ -20,7 +20,7 @@ def _version_callback(value: bool) -> None:
         raise typer.Exit()
 
 
-def _process_config(path: Optional[pathlib.Path]) -> Config:
+def _process_config(path: pathlib.Path | None) -> Config:
     if not path:
         return Config()
 
@@ -33,7 +33,7 @@ def _process_config(path: Optional[pathlib.Path]) -> Config:
 # noinspection PyUnusedLocal
 
 
-@app.callback(name="openapi-python-client")
+@app.callback()
 def cli(
     version: bool = typer.Option(False, "--version", callback=_version_callback, help="Print the version and exit"),
 ) -> None:
@@ -113,12 +113,12 @@ CONFIG_OPTION = typer.Option(None, "--config", help="Path to the config file to 
 
 @app.command()
 def generate(
-    url: Optional[str] = typer.Option(None, help="A URL to read the JSON from"),
-    path: Optional[pathlib.Path] = typer.Option(None, help="A path to the JSON file"),
-    custom_template_path: Optional[pathlib.Path] = typer.Option(None, **custom_template_path_options),  # type: ignore
+    url: str | None = typer.Option(None, help="A URL to read the JSON from"),
+    path: pathlib.Path | None = typer.Option(None, help="A path to the JSON file"),
+    custom_template_path: pathlib.Path | None = typer.Option(None, **custom_template_path_options),  # type: ignore
     meta: MetaType = _meta_option,
     file_encoding: str = typer.Option("utf-8", help="Encoding used when writing generated"),
-    config_path: Optional[pathlib.Path] = CONFIG_OPTION,
+    config_path: pathlib.Path | None = CONFIG_OPTION,
     fail_on_warning: bool = False,
 ) -> None:
     """Generate a new OpenAPI Client library"""
@@ -151,12 +151,12 @@ def generate(
 
 @app.command()
 def update(
-    url: Optional[str] = typer.Option(None, help="A URL to read the JSON from"),
-    path: Optional[pathlib.Path] = typer.Option(None, help="A path to the JSON file"),
-    custom_template_path: Optional[pathlib.Path] = typer.Option(None, **custom_template_path_options),  # type: ignore
+    url: str | None = typer.Option(None, help="A URL to read the JSON from"),
+    path: pathlib.Path | None = typer.Option(None, help="A path to the JSON file"),
+    custom_template_path: pathlib.Path | None = typer.Option(None, **custom_template_path_options),  # type: ignore
     meta: MetaType = _meta_option,
     file_encoding: str = typer.Option("utf-8", help="Encoding used when writing generated"),
-    config_path: Optional[pathlib.Path] = CONFIG_OPTION,
+    config_path: pathlib.Path | None = CONFIG_OPTION,
     fail_on_warning: bool = False,
 ) -> None:
     """Update an existing OpenAPI Client library

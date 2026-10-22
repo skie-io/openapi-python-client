@@ -1,4 +1,3 @@
-from typing import Optional
 from unittest.mock import MagicMock
 
 import pytest
@@ -220,7 +219,7 @@ class TestBuildModelProperty:
         ),
     )
     def test_model_naming(
-        self, name: str, title: Optional[str], parent_name: Optional[str], use_title_prefixing: bool, expected: str
+        self, name: str, title: str | None, parent_name: str | None, use_title_prefixing: bool, expected: str
     ):
         from openapi_python_client.parser.properties import Schemas, build_model_property
 

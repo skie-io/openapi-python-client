@@ -1,7 +1,6 @@
 import json
 import mimetypes
 from pathlib import Path
-from typing import Dict, List, Optional
 
 import yaml
 from pydantic import BaseModel
@@ -13,8 +12,8 @@ class ClassOverride(BaseModel):
     See https://github.com/openapi-generators/openapi-python-client#class_overrides
     """
 
-    class_name: Optional[str] = None
-    module_name: Optional[str] = None
+    class_name: str | None = None
+    module_name: str | None = None
 
 
 class Config(BaseModel):
@@ -23,12 +22,12 @@ class Config(BaseModel):
     See https://github.com/openapi-generators/openapi-python-client#configuration
     """
 
-    class_overrides: Dict[str, ClassOverride] = {}
-    project_name_override: Optional[str] = None
-    package_name_override: Optional[str] = None
-    package_version_override: Optional[str] = None
+    class_overrides: dict[str, ClassOverride] = {}
+    project_name_override: str | None = None
+    package_name_override: str | None = None
+    package_version_override: str | None = None
     use_path_prefixes_for_title_model_names: bool = True
-    post_hooks: List[str] = [
+    post_hooks: list[str] = [
         "ruff check --fix .",
         "black .",
     ]

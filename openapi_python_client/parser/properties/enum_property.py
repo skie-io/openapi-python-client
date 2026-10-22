@@ -1,6 +1,6 @@
 __all__ = ["EnumProperty"]
 
-from typing import Any, ClassVar, Dict, List, Optional, Set, Type, Union, cast
+from typing import Any, ClassVar, cast
 
 from attrs import define, field
 
@@ -9,21 +9,21 @@ from ... import utils
 from .property import Property
 from .schemas import Class
 
-ValueType = Union[str, int]
+ValueType = str | int
 
 
 @define
 class EnumProperty(Property):
     """A property that should use an enum"""
 
-    values: Dict[str, ValueType]
+    values: dict[str, ValueType]
     class_info: Class
-    value_type: Type[ValueType]
-    default: Optional[Any] = field()
+    value_type: type[ValueType]
+    default: Any | None = field()
 
     template: ClassVar[str] = "enum_property.py.jinja"
 
-    _allowed_locations: ClassVar[Set[oai.ParameterLocation]] = {
+    _allowed_locations: ClassVar[set[oai.ParameterLocation]] = {
         oai.ParameterLocation.QUERY,
         oai.ParameterLocation.PATH,
         oai.ParameterLocation.COOKIE,
@@ -36,7 +36,7 @@ class EnumProperty(Property):
     def get_base_json_type_string(self, *, quoted: bool = False) -> str:
         return self.value_type.__name__
 
-    def get_imports(self, *, prefix: str) -> Set[str]:
+    def get_imports(self, *, prefix: str) -> set[str]:
         """
         Get a set of import strings that should be included when this property is used somewhere
 
@@ -49,12 +49,12 @@ class EnumProperty(Property):
         return imports
 
     @staticmethod
-    def values_from_list(values: Union[List[str], List[int]]) -> Dict[str, ValueType]:
+    def values_from_list(values: list[str] | list[int]) -> dict[str, ValueType]:
         """Convert a list of values into dict of {name: value}, where value can sometimes be None"""
-        output: Dict[str, ValueType] = {}
+        output: dict[str, ValueType] = {}
 
         for i, value in enumerate(values):
-            value = cast(Union[str, int], value)
+            value = cast(str | int, value)
             if isinstance(value, int):
                 if value < 0:
                     output[f"VALUE_NEGATIVE_{-value}"] = value

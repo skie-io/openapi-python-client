@@ -21,14 +21,22 @@ from ... import errors
 def _get_kwargs(
     {{ arguments(endpoint, include_client=False) | indent(4) }}
 ) -> Dict[str, Any]:
+    {% if endpoint.header_parameters %}
     {{ header_params(endpoint) | indent(4) }}
 
+    {% endif %}
+    {% if endpoint.query_parameters %}
     {{ query_params(endpoint) | indent(4) }}
 
+    {% endif %}
+    {% if endpoint.json_body %}
     {{ json_body(endpoint) | indent(4) }}
 
+    {% endif %}
+    {% if endpoint.multipart_body %}
     {{ multipart_body(endpoint) | indent(4) }}
 
+    {% endif %}
     return {
         "method": "{{ endpoint.method }}",
     {% if endpoint.path_parameters %}
