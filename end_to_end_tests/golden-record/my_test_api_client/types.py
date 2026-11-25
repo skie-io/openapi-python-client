@@ -13,6 +13,10 @@ class Unset:
     def __repr__(self) -> str:
         return "<Unset>"
 
+    def __reduce__(self) -> str:
+        # pickle by name so UNSET is still UNSET after unpickling
+        return "UNSET"
+
 
 UNSET: Unset = Unset()
 
